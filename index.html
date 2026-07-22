@@ -93,7 +93,13 @@
 
       <!-- Finance Card -->
       <div class="finance-card glass-card" id="card-finance">
-        <div class="finance-title">Laporan Kas Keuangan</div>
+        <div class="finance-title" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span>Laporan Kas Keuangan</span>
+          <button type="button" class="btn-detail-recap" id="btn-show-recap" title="Lihat Detail Transaksi">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right: 4px; vertical-align: middle;"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            Detail Kas
+          </button>
+        </div>
         <div class="finance-main">
           <label>Saldo Kas Masjid</label>
           <div class="balance-val" id="lbl-balance">Rp 12.500.000</div>
@@ -137,15 +143,70 @@
     <div class="iqomah-timer" id="iqomah-countdown-timer">05:00</div>
     <div class="iqomah-advices">
       <div class="iqomah-advice-item">Luruskan dan rapatkan shaf sholat demi kesempurnaan sholat berjamaah.</div>
-      <div class="iqomah-advice-item danger">Mohon nonaktifkan atau senyapkan telepon genggam (HP) Anda!</div>
+      <div class="iqomah-advice-item advice-danger">Mohon nonaktifkan atau senyapkan telepon genggam (HP) Anda!</div>
     </div>
   </div>
 
   <!-- 3. Sholat Mode (Layar Redup/Blank) -->
   <div class="fullscreen-overlay sholat-overlay" id="overlay-sholat">
-    <div class="sholat-icon">🕌</div>
-    <div class="sholat-message">WAKTU SHOLAT SEDANG BERLANGSUNG</div>
-    <div class="sholat-submessage">Harap tenang dan matikan segala alat komunikasi.</div>
+    <div class="sholat-main-advice">SHOLAT BERJAAH SEDANG BERLANGSUNG</div>
+    <div class="sholat-sub-advice">Luruskan shaf, rapatkan barisan, senyapkan handphone, khusyuklah menghadap Rabb.</div>
+  </div>
+
+  <!-- 4. Financial Detail Overlay -->
+  <div class="fullscreen-overlay recap-overlay" id="overlay-recap">
+    <div class="recap-modal-card glass-card">
+      <div class="recap-modal-header">
+        <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); margin: 0;">Transparansi Kas Baiturrahim</h2>
+        <button type="button" class="btn-close-recap" id="btn-close-recap">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <!-- Summaries row -->
+      <div class="recap-summary-grid">
+        <div class="recap-summary-box">
+          <label>Saldo Kas Masjid</label>
+          <span id="recap-lbl-balance" style="color: var(--accent-gold);">Rp 0</span>
+        </div>
+        <div class="recap-summary-box">
+          <label>Pemasukan (Bulan Ini)</label>
+          <span id="recap-lbl-month-income" style="color: #24b36d;">+ Rp 0</span>
+        </div>
+        <div class="recap-summary-box">
+          <label>Pengeluaran (Bulan Ini)</label>
+          <span id="recap-lbl-month-expense" style="color: #ef4444;">- Rp 0</span>
+        </div>
+      </div>
+      
+      <!-- Ledger list title -->
+      <div style="text-align: left; margin: 15px 0 8px 0; font-weight: 700; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+        10 Transaksi Terakhir
+      </div>
+      
+      <!-- Ledger scrollable area -->
+      <div class="recap-ledger-viewport">
+        <table class="recap-table">
+          <thead>
+            <tr>
+              <th style="width: 100px;">Tanggal</th>
+              <th>Keterangan Penggunaan</th>
+              <th style="text-align: right; width: 130px;">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody id="recap-table-body">
+            <!-- Dynamic rows will be loaded from DB -->
+          </tbody>
+        </table>
+        <div id="recap-empty-state" style="padding: 30px; text-align: center; color: var(--color-muted); font-style: italic; display: none;">
+          Belum ada catatan transaksi.
+        </div>
+      </div>
+      
+      <div style="font-size: 0.75rem; color: var(--color-muted); margin-top: 15px; text-align: center; line-height: 1.4;">
+        Diupdate secara real-time nirkabel demi transparansi jamaah Masjid Baiturrahim Nologaten.
+      </div>
+    </div>
   </div>
 
   <!-- APPLICATION CODE INJECTIONS -->

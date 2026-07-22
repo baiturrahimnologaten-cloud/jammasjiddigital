@@ -216,6 +216,12 @@ document.addEventListener("DOMContentLoaded", () => {
     setupSlideshow();
     // Do a state sync on load / config update
     syncStateWithClock();
+    
+    // Auto-refresh transparency overlay if currently open
+    const overlay = document.getElementById("overlay-recap");
+    if (overlay && overlay.classList.contains("show")) {
+      renderFinancialOverlay();
+    }
   });
 
   // Start the 1-second system clock loop
@@ -244,6 +250,28 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         // Change to Enter Fullscreen icon
         fsBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>`;
+      }
+    });
+  // Financial Recap Overlay Controller
+  const btnShowRecap = document.getElementById("btn-show-recap");
+  const btnCloseRecap = document.getElementById("btn-close-recap");
+  const overlayRecap = document.getElementById("overlay-recap");
+  
+  if (btnShowRecap && btnCloseRecap && overlayRecap) {
+    btnShowRecap.addEventListener("click", () => {
+      renderFinancialOverlay();
+      overlayRecap.classList.add("show");
+    });
+    
+    const hideRecap = () => {
+      overlayRecap.classList.remove("show");
+    };
+    
+    btnCloseRecap.addEventListener("click", hideRecap);
+    
+    overlayRecap.addEventListener("click", (e) => {
+      if (e.target === overlayRecap) {
+        hideRecap();
       }
     });
   }
@@ -606,3 +634,53 @@ function rotateSlides() {
   // Update caption description text
   document.getElementById("slide-desc").innerText = config.photos[slideIndex].caption || "";
 }
+
+/**
+ * Renders the transparent financial details and recent transactions list
+ */
+function renderFinancialOverlay() {
+  if (!config) return;
+  
+  const summary = window.dataStore.getFinanceSummary(config);
+  
+  const formatRupiah = (val) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+  };
+  
+  // Render summaries
+  document.getElementById("recap-lbl-balance").innerText = formatRupiah(summary.balance);
+  document.getElementById("recap-lbl-month-income").innerText = "+ " + formatRupiah(summary.month.income).replace("Rp", "Rp ");
+  document.getElementById("recap-lbl-month-expense").innerText = "- " + formatRupiah(summary.month.expense).replace("Rp", "Rp ");
+  
+  // Render table rows
+  const tbody = document.getElementById("recap-table-body");
+  const emptyState = document.getElementById("recap-empty-state");
+  if (!tbody || !emptyState) return;
+  
+  const transactions = config.infaqTransactions || [];
+  if (transactions.length === 0) {
+    tbody.innerHTML = "";
+    emptyState.style.display = "block";
+    return;
+  }
+  
+  emptyState.style.display = "none";
+  
+  // Sort by date descending and show max 10
+  const sortedTxs = [...transactions]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 10);
+    
+  tbody.innerHTML = sortedTxs.map(tx => {
+    return `
+      <tr>
+        <td style="color: var(--color-muted); padding: 12px 10px; white-space: nowrap;">${tx.date}</td>
+        <td style="font-weight: 500; color: var(--color-primary); padding: 12px 10px;">${tx.description}</td>
+        <td style="text-align: right; font-weight: 700; color: ${tx.type === 'income' ? '#24b36d' : '#ef4444'}; padding: 12px 10px; white-space: nowrap;">
+          ${tx.type === 'income' ? '+' : '-'} ${formatRupiah(tx.amount).replace("Rp", "Rp ")}
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+

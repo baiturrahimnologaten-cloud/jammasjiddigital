@@ -41,16 +41,39 @@ function verifyAdminSession() {
     const handleLogin = () => {
       const entered = inputPass.value;
       const actualPassword = localData.adminPassword || "admin123";
-      if (entered === actualPassword) {
-        sessionStorage.setItem("admin_logged_in", "true");
-        overlay.style.display = "none";
-        lblError.style.display = "none";
-        initDashboard();
-      } else {
-        lblError.style.display = "block";
-        inputPass.value = "";
-        inputPass.focus();
-      }
+      
+      lblError.style.display = "none";
+      btnSubmit.disabled = true;
+      const originalHtml = btnSubmit.innerHTML;
+      btnSubmit.innerHTML = `<span class="btn-spinner"></span> Memverifikasi...`;
+      
+      setTimeout(() => {
+        if (entered === actualPassword) {
+          sessionStorage.setItem("admin_logged_in", "true");
+          
+          // Show fullscreen loading overlay
+          const loadOverlay = document.getElementById("loading-overlay");
+          if (loadOverlay) {
+            document.getElementById("loading-text").innerText = "Membuka Panel Dashboard...";
+            loadOverlay.classList.add("show");
+          }
+          
+          setTimeout(() => {
+            if (loadOverlay) loadOverlay.classList.remove("show");
+            overlay.style.display = "none";
+            lblError.style.display = "none";
+            initDashboard();
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = originalHtml;
+          }, 800);
+        } else {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = originalHtml;
+          lblError.style.display = "block";
+          inputPass.value = "";
+          inputPass.focus();
+        }
+      }, 1000);
     };
     
     btnSubmit.addEventListener("click", handleLogin);
@@ -78,8 +101,15 @@ function initDashboard() {
   
   // Register Logout Event
   document.getElementById("btn-logout").addEventListener("click", () => {
-    sessionStorage.removeItem("admin_logged_in");
-    window.location.reload();
+    const loadOverlay = document.getElementById("loading-overlay");
+    if (loadOverlay) {
+      document.getElementById("loading-text").innerText = "Keluar dari Sesi Admin...";
+      loadOverlay.classList.add("show");
+    }
+    setTimeout(() => {
+      sessionStorage.removeItem("admin_logged_in");
+      window.location.reload();
+    }, 1000);
   });
 
   // Register Test Alarm Event (Adzan - 5x)

@@ -619,3 +619,167 @@ main {
   height: 18px;
   stroke-width: 2.5;
 }
+
+/* --- DETAIL RECAP TOGGLE BUTTON --- */
+.btn-detail-recap {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--accent-gold);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-detail-recap:hover {
+  background: var(--accent-gold);
+  color: var(--bg-primary);
+  border-color: var(--accent-gold);
+  transform: translateY(-1px);
+}
+
+.btn-detail-recap svg {
+  vertical-align: middle;
+}
+
+/* --- FINANCIAL TRANSPARENCY OVERLAY --- */
+.recap-overlay {
+  background: rgba(1, 10, 6, 0.85); /* Dark mint glow overlay */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 900;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.recap-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.recap-modal-card {
+  width: 90%;
+  max-width: 620px;
+  padding: 25px;
+  border-radius: 16px;
+  background: rgba(5, 35, 22, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.9);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.recap-overlay.show .recap-modal-card {
+  transform: scale(1);
+}
+
+.recap-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-close-recap {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-recap:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.recap-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.recap-summary-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+
+.recap-summary-box label {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.recap-summary-box span {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.recap-ledger-viewport {
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
+/* Scrollbar styles inside ledger */
+.recap-ledger-viewport::-webkit-scrollbar {
+  width: 6px;
+}
+
+.recap-ledger-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.recap-ledger-viewport::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.recap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.recap-table th {
+  background: rgba(5, 30, 20, 0.95);
+  padding: 10px;
+  font-weight: 600;
+  color: var(--color-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+}
+
+.recap-table td {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
