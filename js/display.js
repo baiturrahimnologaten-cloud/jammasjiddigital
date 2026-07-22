@@ -587,11 +587,12 @@ function updateNextPrayerCountdown() {
 function setupSlideshow() {
   if (!config || !config.photos) return;
 
+  const photosList = Array.isArray(config.photos) ? config.photos : Object.values(config.photos);
   const container = document.getElementById("slideshow-images-container");
   
   // Build slide HTML
   let slidesHtml = "";
-  config.photos.forEach((photo, idx) => {
+  photosList.forEach((photo, idx) => {
     // Prepend active class on first slide
     const activeClass = idx === 0 ? "active" : "";
     slidesHtml += `<img src="${photo.url}" alt="${photo.caption || 'Foto'}" class="slide-img ${activeClass}" id="slide-${idx}">`;
@@ -600,8 +601,8 @@ function setupSlideshow() {
   container.innerHTML = slidesHtml;
 
   // Set the caption of the first slide
-  if (config.photos.length > 0) {
-    document.getElementById("slide-desc").innerText = config.photos[0].caption || "";
+  if (photosList.length > 0) {
+    document.getElementById("slide-desc").innerText = photosList[0].caption || "";
   }
 
   // Clear previous intervals if any
@@ -612,15 +613,17 @@ function setupSlideshow() {
   slideIndex = 0;
   
   // Only start rotation if we have more than 1 image
-  if (config.photos.length > 1) {
+  if (photosList.length > 1) {
     slideInterval = setInterval(rotateSlides, 7000); // rotate every 7 seconds
   }
 }
 
 function rotateSlides() {
-  if (!config || !config.photos || config.photos.length <= 1) return;
+  if (!config || !config.photos) return;
+  const photosList = Array.isArray(config.photos) ? config.photos : Object.values(config.photos);
+  if (photosList.length <= 1) return;
 
-  const totalPhotos = config.photos.length;
+  const totalPhotos = photosList.length;
   
   // Hide current slide
   const currSlide = document.getElementById(`slide-${slideIndex}`);
@@ -634,7 +637,7 @@ function rotateSlides() {
   if (nextSlide) nextSlide.classList.add("active");
 
   // Update caption description text
-  document.getElementById("slide-desc").innerText = config.photos[slideIndex].caption || "";
+  document.getElementById("slide-desc").innerText = photosList[slideIndex].caption || "";
 }
 
 /**

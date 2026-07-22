@@ -42,11 +42,11 @@ const DEFAULT_DATA = {
     "Jumlah Infaq Jum'at yang lalu sebesar Rp 1.850.000,- Syukron Jazakumullah Khairan.",
     "Kajian Rutin Ahad Pagi dilaksanakan pukul 06.00 WIB bersama Ustadz Pengampu."
   ],
-  photos: [
-    { id: "1", url: "assets/photo1.png", caption: "Kajian Rutin Ba'da Maghrib Jamaah Masjid Baiturrahim" },
-    { id: "2", url: "assets/photo2.png", caption: "Penyaluran Bantuan Sosial & Sembako Kepada Warga Sekitar" },
-    { id: "3", url: "assets/photo3.png", caption: "Kerja Bakti Rutin Remaja Masjid Baiturrahim" }
-  ],
+  photos: {
+    "1": { id: "1", url: "assets/photo1.png", caption: "Kajian Rutin Ba'da Maghrib Jamaah Masjid Baiturrahim" },
+    "2": { id: "2", url: "assets/photo2.png", caption: "Penyaluran Bantuan Sosial & Sembako Kepada Warga Sekitar" },
+    "3": { id: "3", url: "assets/photo3.png", caption: "Kerja Bakti Rutin Remaja Masjid Baiturrahim" }
+  },
   firebase: {
     enabled: false,
     apiKey: "",
@@ -94,6 +94,13 @@ class DataStore {
     } else {
       try {
         const parsed = JSON.parse(raw);
+        if (parsed.photos && Array.isArray(parsed.photos)) {
+          const photosMap = {};
+          parsed.photos.forEach(p => {
+            if (p && p.id) photosMap[p.id] = p;
+          });
+          parsed.photos = photosMap;
+        }
         // Merge with default to handle missing keys in future upgrades
         loadedData = { ...DEFAULT_DATA, ...parsed };
       } catch (e) {
@@ -306,6 +313,13 @@ class DataStore {
       this.firebaseUnsubscribe = db.collection('masjid').doc('config').onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
+          if (cloudData.photos && Array.isArray(cloudData.photos)) {
+            const photosMap = {};
+            cloudData.photos.forEach(p => {
+              if (p && p.id) photosMap[p.id] = p;
+            });
+            cloudData.photos = photosMap;
+          }
           
           // Compare data without the firebase configuration to avoid infinite loops
           const cleanLocal = { ...this.data };

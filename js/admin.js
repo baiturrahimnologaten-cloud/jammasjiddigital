@@ -527,7 +527,10 @@ function initUploadListeners() {
           caption: caption
         };
         
-        localData.photos.push(newPhoto);
+        if (!localData.photos) {
+          localData.photos = {};
+        }
+        localData.photos[newPhoto.id] = newPhoto;
         
         // Clear input caption, refresh preview cards
         captionInput.value = "";
@@ -549,7 +552,9 @@ function initPhotoGrid() {
 
   container.innerHTML = "";
 
-  if (localData.photos.length === 0) {
+  const photosList = localData.photos ? Object.values(localData.photos) : [];
+
+  if (photosList.length === 0) {
     container.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">
         Belum ada foto kegiatan. Silakan pilih foto di atas untuk diunggah.
@@ -558,7 +563,7 @@ function initPhotoGrid() {
     return;
   }
 
-  localData.photos.forEach(photo => {
+  photosList.forEach(photo => {
     const card = document.createElement("div");
     card.className = "photo-card";
     
@@ -573,16 +578,17 @@ function initPhotoGrid() {
     // Bind Delete action
     card.querySelector(".delete-photo-btn").addEventListener("click", (e) => {
       const id = e.target.getAttribute("data-id");
-      localData.photos = localData.photos.filter(p => p.id !== id);
+      if (localData.photos) {
+        delete localData.photos[id];
+      }
       initPhotoGrid();
     });
 
     // Bind Caption update on text input change
     card.querySelector(".photo-caption-input").addEventListener("change", (e) => {
       const id = e.target.getAttribute("data-id");
-      const matchedPhoto = localData.photos.find(p => p.id === id);
-      if (matchedPhoto) {
-        matchedPhoto.caption = e.target.value.trim();
+      if (localData.photos && localData.photos[id]) {
+        localData.photos[id].caption = e.target.value.trim();
       }
     });
 
