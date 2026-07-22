@@ -264,6 +264,7 @@ function initFormValues() {
   renderFinanceLedger();
 
   // Set default previews
+  document.getElementById("sidebar-logo").src = localData.logoUrl;
   document.getElementById("img-logo-preview").src = localData.logoUrl;
   document.getElementById("img-qris-preview").src = localData.qrisUrl;
 
