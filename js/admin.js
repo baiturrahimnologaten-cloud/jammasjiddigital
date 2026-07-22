@@ -20,6 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 4. Initialize password visibility eye toggles
   initPasswordToggles();
+
+  // 5. Register DataStore listener for real-time password change detection (security logout)
+  window.dataStore.addListener((newData) => {
+    const isLogged = sessionStorage.getItem("admin_logged_in") === "true";
+    if (isLogged) {
+      if (localData && newData.adminPassword !== localData.adminPassword) {
+        sessionStorage.removeItem("admin_logged_in");
+        alert("Sandi admin telah diubah dari perangkat lain. Sesi Anda berakhir demi keamanan.");
+        window.location.reload();
+      }
+    }
+  });
 });
 
 function verifyAdminSession() {
