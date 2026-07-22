@@ -55,7 +55,14 @@ const DEFAULT_DATA = {
     storageBucket: "",
     messagingSenderId: "",
     appId: ""
-  }
+  },
+  infaqTransactions: [
+    { id: "tx_1", date: "2026-07-20", type: "income", amount: 1850000, description: "Kotak Infaq Jum'at Utama" },
+    { id: "tx_2", date: "2026-07-18", type: "income", amount: 250000, description: "Infaq Donatur Kajian Ahad" },
+    { id: "tx_3", date: "2026-07-15", type: "expense", amount: 350000, description: "Pembayaran Tagihan Listrik Masjid" },
+    { id: "tx_4", date: "2026-07-12", type: "expense", amount: 100000, description: "Pembelian Air Mineral Galon Kajian" },
+    { id: "tx_5", date: "2026-07-05", type: "income", amount: 12500000, description: "Saldo Awal Kas Masjid" }
+  ]
 };
 
 class DataStore {
@@ -135,6 +142,74 @@ class DataStore {
     callback(this.data);
     return () => {
       this.listeners = this.listeners.filter(cb => cb !== callback);
+    };
+  }
+
+  /**
+   * Aggregates and calculates financial summaries for a week, month, and year
+   */
+  getFinanceSummary(data = this.data) {
+    const transactions = data.infaqTransactions || [];
+    const now = new Date();
+    
+    let totalIncome = 0;
+    let totalExpense = 0;
+    
+    let weekIncome = 0;
+    let weekExpense = 0;
+    
+    let monthIncome = 0;
+    let monthExpense = 0;
+    
+    let yearIncome = 0;
+    let yearExpense = 0;
+    
+    // Parse date safely ignoring timezone shifts
+    const parseLocalDate = (dateStr) => {
+      const parts = dateStr.split('-');
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    };
+    
+    const oneDay = 24 * 60 * 60 * 1000;
+    
+    transactions.forEach(tx => {
+      const txDate = parseLocalDate(tx.date);
+      // Reset hours to compare dates cleanly
+      const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const txZeroDate = new Date(txDate.getFullYear(), txDate.getMonth(), txDate.getDate());
+      
+      const diffTime = todayDate - txZeroDate;
+      const diffDays = Math.floor(diffTime / oneDay);
+      
+      // Weekly = last 7 days (including today)
+      const isThisWeek = diffDays >= 0 && diffDays < 7;
+      // Monthly = same calendar month and year
+      const isThisMonth = txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
+      // Yearly = same calendar year
+      const isThisYear = txDate.getFullYear() === now.getFullYear();
+      
+      const amount = Number(tx.amount) || 0;
+      
+      if (tx.type === 'income') {
+        totalIncome += amount;
+        if (isThisWeek) weekIncome += amount;
+        if (isThisMonth) monthIncome += amount;
+        if (isThisYear) yearIncome += amount;
+      } else {
+        totalExpense += amount;
+        if (isThisWeek) weekExpense += amount;
+        if (isThisMonth) monthExpense += amount;
+        if (isThisYear) yearExpense += amount;
+      }
+    });
+    
+    return {
+      balance: totalIncome - totalExpense,
+      totalIncome,
+      totalExpense,
+      week: { income: weekIncome, expense: weekExpense },
+      month: { income: monthIncome, expense: monthExpense },
+      year: { income: yearIncome, expense: yearExpense }
     };
   }
 

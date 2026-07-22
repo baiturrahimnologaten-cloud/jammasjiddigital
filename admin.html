@@ -165,45 +165,117 @@
 
       <!-- 2. FINANCE TAB -->
       <section class="tab-content" id="tab-finance">
-        <div class="dashboard-grid">
-          <!-- Kas Masjid Card -->
-          <div class="card">
-            <div class="card-title">Laporan Kas Keuangan</div>
-            <div class="form-group">
-              <label for="num-balance">Total Saldo Kas Masjid</label>
-              <div class="input-suffix">
-                <input type="number" id="num-balance" placeholder="12500000">
-                <span>Rupiah</span>
-              </div>
+        <!-- 2.1 Financial Recap Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
+          <!-- Saldo Card -->
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid var(--accent-color);">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">SALDO KAS MASJID</div>
+            <div id="recap-balance" style="font-size: 1.6rem; font-weight: 800; margin-top: 5px; color: var(--text-main);">Rp 0</div>
+          </div>
+          <!-- Weekly Recap -->
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #10b981;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP SEMINGGU INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
+              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-week-income">Rp 0</span></span>
+              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-week-expense">Rp 0</span></span>
             </div>
-            <div class="form-group">
-              <label for="num-income">Pemasukan Mingguan</label>
-              <div class="input-suffix">
-                <input type="number" id="num-income" placeholder="1850000">
-                <span>Rupiah</span>
-              </div>
+          </div>
+          <!-- Monthly Recap -->
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #3b82f6;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP BULAN INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
+              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-month-income">Rp 0</span></span>
+              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-month-expense">Rp 0</span></span>
             </div>
-            <div class="form-group">
-              <label for="num-expense">Pengeluaran Mingguan</label>
-              <div class="input-suffix">
-                <input type="number" id="num-expense" placeholder="450000">
-                <span>Rupiah</span>
+          </div>
+          <!-- Yearly Recap -->
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #8b5cf6;">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP TAHUN INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
+              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-year-income">Rp 0</span></span>
+              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-year-expense">Rp 0</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1.2fr 1.8fr; gap: 20px;">
+          <!-- Left: Input Form + QRIS -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <!-- Form Card -->
+            <div class="card" style="padding: 20px; margin-bottom: 0;">
+              <div class="card-title" style="margin-bottom: 15px; border-bottom: none; padding-bottom: 0;">Tambah Transaksi Baru</div>
+              
+              <div class="form-group" style="margin-top: 10px;">
+                <label for="val-tx-date">Tanggal Transaksi</label>
+                <input type="date" id="val-tx-date" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: inherit; width: 100%; margin-top: 6px;">
+              </div>
+              
+              <div class="form-group" style="margin-top: 10px;">
+                <label for="val-tx-type">Jenis Transaksi</label>
+                <select id="val-tx-type" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: inherit; width: 100%; margin-top: 6px;">
+                  <option value="income">Pemasukan (Uang Masuk / Infaq)</option>
+                  <option value="expense">Pengeluaran (Uang Keluar / Belanja)</option>
+                </select>
+              </div>
+              
+              <div class="form-group" style="margin-top: 10px;">
+                <label for="val-tx-amount">Jumlah Uang (Rupiah)</label>
+                <div class="input-suffix" style="margin-top: 6px;">
+                  <input type="number" id="val-tx-amount" placeholder="Contoh: 50000">
+                  <span>Rp</span>
+                </div>
+              </div>
+              
+              <div class="form-group" style="margin-top: 10px;">
+                <label for="val-tx-desc">Keterangan / Penggunaan</label>
+                <input type="text" id="val-tx-desc" placeholder="Contoh: Infaq Jumat Utama, Beli Sapu..." style="margin-top: 6px;">
+              </div>
+              
+              <button type="button" class="btn btn-primary" id="btn-add-tx" style="width: 100%; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Transaksi
+              </button>
+            </div>
+
+            <!-- QRIS Card -->
+            <div class="card" style="padding: 20px; margin-bottom: 0;">
+              <div class="card-title" style="margin-bottom: 15px; border-bottom: none; padding-bottom: 0;">QRIS Donasi Masjid</div>
+              <div class="form-group" style="margin-top: 10px;">
+                <div class="asset-upload-card" style="align-items: flex-start; gap: 15px;">
+                  <img src="assets/qris.png" alt="Preview QRIS" class="asset-preview" id="img-qris-preview" style="width: 90px; height: 90px; border-radius: 8px; margin: 0;">
+                  <div style="flex-grow: 1;">
+                    <input type="file" id="file-qris" accept="image/*" style="display: none;">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('file-qris').click()" style="width: 100%;">Ganti Foto QRIS</button>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4;">Usahakan gambar bersih resolusi tinggi agar mudah discan jamaah dari kejauhan.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- QRIS Masjid Card -->
-          <div class="card">
-            <div class="card-title">QRIS Donasi Masjid</div>
-            <div class="form-group">
-              <label>Gambar Barcode QRIS</label>
-              <div class="asset-upload-card" style="align-items: flex-start;">
-                <img src="assets/qris.png" alt="Preview QRIS" class="asset-preview" id="img-qris-preview" style="width: 150px; height: 150px;">
-                <div>
-                  <input type="file" id="file-qris" accept="image/*" style="display: none;">
-                  <button class="btn btn-secondary" onclick="document.getElementById('file-qris').click()">Ganti Foto QRIS</button>
-                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Unggah barcode QRIS masjid Anda. Usahakan gambar bersih beresolusi tinggi agar mudah discan jamaah dari kejauhan.</p>
-                </div>
+          <!-- Right: Transactions Ledger Table -->
+          <div class="card" style="padding: 20px; display: flex; flex-direction: column; min-height: 550px; margin-bottom: 0;">
+            <div class="card-title" style="margin-bottom: 15px; border-bottom: none; padding-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+              <span>Catatan Transaksi Keuangan</span>
+              <span id="tx-count-badge" style="font-size: 0.8rem; background: var(--border-color); color: var(--text-muted); padding: 3px 8px; border-radius: 12px; font-weight: 600;">0 Transaksi</span>
+            </div>
+            
+            <div style="flex-grow: 1; overflow-y: auto; max-height: 520px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color); margin-top: 10px;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
+                <thead>
+                  <tr style="background: var(--card-bg); border-bottom: 2px solid var(--border-color); position: sticky; top: 0; z-index: 10;">
+                    <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted); width: 90px;">Tanggal</th>
+                    <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted);">Keterangan</th>
+                    <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted); text-align: right; width: 110px;">Jumlah</th>
+                    <th style="padding: 12px 5px; font-weight: 600; color: var(--text-muted); text-align: center; width: 45px;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tx-table-body">
+                  <!-- Dynamic Rows populated by JS -->
+                </tbody>
+              </table>
+              <div id="tx-empty-state" style="padding: 40px 10px; text-align: center; color: var(--text-muted); font-style: italic;">
+                Tidak ada data transaksi kas.
               </div>
             </div>
           </div>

@@ -98,6 +98,52 @@ function initDashboard() {
       playBuzzerTone(selectedTone, 3);
     });
   }
+
+  // Register Add Transaction Event
+  const btnAddTx = document.getElementById("btn-add-tx");
+  if (btnAddTx) {
+    btnAddTx.addEventListener("click", () => {
+      const dateVal = document.getElementById("val-tx-date").value;
+      const typeVal = document.getElementById("val-tx-type").value;
+      const amountVal = document.getElementById("val-tx-amount").value.trim();
+      const descVal = document.getElementById("val-tx-desc").value.trim();
+      
+      if (!dateVal) {
+        alert("Silakan pilih tanggal transaksi.");
+        return;
+      }
+      if (!amountVal || isNaN(amountVal) || parseInt(amountVal) <= 0) {
+        alert("Silakan masukkan jumlah uang yang valid (angka positif).");
+        return;
+      }
+      if (!descVal) {
+        alert("Silakan masukkan keterangan/penggunaan transaksi.");
+        return;
+      }
+      
+      const newTx = {
+        id: "tx_" + Date.now(),
+        date: dateVal,
+        type: typeVal,
+        amount: parseInt(amountVal),
+        description: descVal
+      };
+      
+      if (!localData.infaqTransactions) {
+        localData.infaqTransactions = [];
+      }
+      localData.infaqTransactions.push(newTx);
+      
+      // Clear inputs
+      document.getElementById("val-tx-amount").value = "";
+      document.getElementById("val-tx-desc").value = "";
+      document.getElementById("val-tx-date").value = new Date().toISOString().split('T')[0];
+      
+      // Save and re-render
+      saveAllChanges();
+      renderFinanceLedger();
+    });
+  }
 }
 
 /**
@@ -144,10 +190,15 @@ function initFormValues() {
   document.getElementById("num-longitude").value = localData.longitude;
   document.getElementById("sel-timezone").value = localData.timezone;
 
-  // Finances Tab
-  document.getElementById("num-balance").value = localData.infaqBalance;
-  document.getElementById("num-income").value = localData.infaqIncome;
-  document.getElementById("num-expense").value = localData.infaqExpense;
+  // Finances Tab (Initialize Transactions Ledger)
+  if (!localData.infaqTransactions) {
+    localData.infaqTransactions = [];
+  }
+  const txDateEl = document.getElementById("val-tx-date");
+  if (txDateEl) {
+    txDateEl.value = new Date().toISOString().split('T')[0];
+  }
+  renderFinanceLedger();
 
   // Set default previews
   document.getElementById("img-logo-preview").src = localData.logoUrl;
@@ -493,10 +544,14 @@ function saveAllChanges() {
   localData.longitude = parseFloat(document.getElementById("num-longitude").value) || 110.4011;
   localData.timezone = parseInt(document.getElementById("sel-timezone").value) || 7;
 
-  // Finances Tab
-  localData.infaqBalance = parseInt(document.getElementById("num-balance").value) || 0;
-  localData.infaqIncome = parseInt(document.getElementById("num-income").value) || 0;
-  localData.infaqExpense = parseInt(document.getElementById("num-expense").value) || 0;
+  // Finances Tab (Auto calculated from ledger transactions)
+  if (!localData.infaqTransactions) {
+    localData.infaqTransactions = [];
+  }
+  const finSummary = window.dataStore.getFinanceSummary(localData);
+  localData.infaqBalance = finSummary.balance;
+  localData.infaqIncome = finSummary.week.income;
+  localData.infaqExpense = finSummary.week.expense;
 
   // Iqomah
   const prayers = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
@@ -759,5 +814,78 @@ function showToast(title, message, type = "success") {
   window.toastTimeout = setTimeout(() => {
     toast.classList.remove("show");
   }, 4000);
+}
+
+/**
+ * Render the entire transaction ledger, update summaries and populate table
+ */
+function renderFinanceLedger() {
+  if (!localData) return;
+  
+  const summary = window.dataStore.getFinanceSummary(localData);
+  
+  const formatRupiah = (val) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+  };
+  
+  // Update recap labels
+  document.getElementById("recap-balance").innerText = formatRupiah(summary.balance);
+  document.getElementById("recap-week-income").innerText = formatRupiah(summary.week.income);
+  document.getElementById("recap-week-expense").innerText = formatRupiah(summary.week.expense);
+  document.getElementById("recap-month-income").innerText = formatRupiah(summary.month.income);
+  document.getElementById("recap-month-expense").innerText = formatRupiah(summary.month.expense);
+  document.getElementById("recap-year-income").innerText = formatRupiah(summary.year.income);
+  document.getElementById("recap-year-expense").innerText = formatRupiah(summary.year.expense);
+  
+  // Render table rows
+  const tbody = document.getElementById("tx-table-body");
+  const emptyState = document.getElementById("tx-empty-state");
+  const countBadge = document.getElementById("tx-count-badge");
+  
+  if (!tbody || !emptyState || !countBadge) return;
+  
+  const transactions = localData.infaqTransactions || [];
+  countBadge.innerText = `${transactions.length} Transaksi`;
+  
+  if (transactions.length === 0) {
+    tbody.innerHTML = "";
+    emptyState.style.display = "block";
+    return;
+  }
+  
+  emptyState.style.display = "none";
+  
+  // Sort transactions by date descending (newest on top)
+  const sortedTxs = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+  
+  tbody.innerHTML = sortedTxs.map(tx => {
+    return `
+      <tr style="border-bottom: 1px solid var(--border-color);">
+        <td style="padding: 12px 10px; color: var(--text-muted); white-space: nowrap;">${tx.date}</td>
+        <td style="padding: 12px 10px; font-weight: 500; color: var(--text-main);">${tx.description}</td>
+        <td style="padding: 12px 10px; text-align: right; font-weight: 700; color: ${tx.type === 'income' ? '#10b981' : '#ef4444'};">
+          ${tx.type === 'income' ? '+' : '-'} ${formatRupiah(tx.amount).replace("Rp", "Rp ")}
+        </td>
+        <td style="padding: 12px 5px; text-align: center;">
+          <button type="button" class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: var(--danger-color); cursor: pointer; padding: 2px 5px; display: inline-flex; align-items: center; justify-content: center;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10v-3a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join("");
+  
+  // Bind delete event listeners
+  const deleteBtns = tbody.querySelectorAll(".btn-delete-tx");
+  deleteBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const txId = btn.getAttribute("data-id");
+      if (confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
+        localData.infaqTransactions = localData.infaqTransactions.filter(t => t.id !== txId);
+        saveAllChanges();
+        renderFinanceLedger();
+      }
+    });
+  });
 }
 

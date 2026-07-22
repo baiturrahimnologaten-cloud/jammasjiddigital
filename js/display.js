@@ -259,13 +259,14 @@ function renderStaticData() {
   document.getElementById("lbl-mosque-name").innerText = config.mosqueName;
   document.getElementById("lbl-mosque-address").innerText = config.mosqueAddress;
 
-  // Financial info
+  // Financial info (automatically calculated from transactions)
   const formatRupiah = (val) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
   };
-  document.getElementById("lbl-balance").innerText = formatRupiah(config.infaqBalance);
-  document.getElementById("lbl-income").innerText = formatRupiah(config.infaqIncome);
-  document.getElementById("lbl-expense").innerText = formatRupiah(config.infaqExpense);
+  const finSummary = window.dataStore.getFinanceSummary(config);
+  document.getElementById("lbl-balance").innerText = formatRupiah(finSummary.balance);
+  document.getElementById("lbl-income").innerText = formatRupiah(finSummary.week.income);
+  document.getElementById("lbl-expense").innerText = formatRupiah(finSummary.week.expense);
 
   // Logo and QRIS images
   document.getElementById("masjid-logo-img").src = config.logoUrl;
