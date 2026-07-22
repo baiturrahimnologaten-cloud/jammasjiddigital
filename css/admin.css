@@ -656,6 +656,10 @@ input:checked + .slider-switch:before {
 }
 
 @media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
   .mobile-navbar {
     display: flex;
   }
