@@ -237,7 +237,7 @@ class DataStore {
   /**
    * Helper to compress images on upload to prevent exceeding localStorage/Firestore limits
    */
-  compressImage(file, maxWidth = 800, quality = 0.7) {
+  compressImage(file, maxWidth = 800, quality = 0.7, forceJPEG = true) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -261,8 +261,8 @@ class DataStore {
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to PNG if original file is PNG to preserve transparency, otherwise JPEG
-          const outputFormat = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          // Convert to PNG if original file is PNG and forceJPEG is false, otherwise convert to JPEG
+          const outputFormat = (file.type === 'image/png' && !forceJPEG) ? 'image/png' : 'image/jpeg';
           const compressedBase64 = outputFormat === 'image/png' 
             ? canvas.toDataURL('image/png') 
             : canvas.toDataURL('image/jpeg', quality);

@@ -484,7 +484,7 @@ function initUploadListeners() {
     if (file) {
       try {
         // Compress image before saving (maxWidth = 300 for logos)
-        const compressedBase64 = await window.dataStore.compressImage(file, 300, 0.8);
+        const compressedBase64 = await window.dataStore.compressImage(file, 300, 0.8, false);
         localData.logoUrl = compressedBase64;
         document.getElementById("img-logo-preview").src = compressedBase64;
         document.getElementById("sidebar-logo").src = compressedBase64;
@@ -499,8 +499,8 @@ function initUploadListeners() {
     const file = e.target.files[0];
     if (file) {
       try {
-        // Compress image (maxWidth = 600 for QR codes)
-        const compressedBase64 = await window.dataStore.compressImage(file, 600, 0.9);
+        // Compress image (maxWidth = 500 for QR codes, force JPEG)
+        const compressedBase64 = await window.dataStore.compressImage(file, 500, 0.6, true);
         localData.qrisUrl = compressedBase64;
         document.getElementById("img-qris-preview").src = compressedBase64;
       } catch (err) {
@@ -517,8 +517,8 @@ function initUploadListeners() {
     
     if (file) {
       try {
-        // Compress activity photo (maxWidth = 800 for TV display resolution)
-        const compressedBase64 = await window.dataStore.compressImage(file, 800, 0.7);
+        // Compress activity photo (maxWidth = 500, quality = 0.5, force JPEG to keep size tiny)
+        const compressedBase64 = await window.dataStore.compressImage(file, 500, 0.5, true);
         
         // Add new photo item to local data list
         const newPhoto = {
