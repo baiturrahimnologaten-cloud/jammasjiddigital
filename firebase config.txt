@@ -1,0 +1,8 @@
+  apiKey: "AIzaSyAqGrW3LfCEZurfIV2f2EKy0pQeKf5_0Xo",
+  authDomain: "masjid-baiturrahim-30958.firebaseapp.com",
+  databaseURL: "https://masjid-baiturrahim-30958-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "masjid-baiturrahim-30958",
+  storageBucket: "masjid-baiturrahim-30958.firebasestorage.app",
+  messagingSenderId: "278071318692",
+  appId: "1:278071318692:web:4eb7d88682ad7923636e31",
+  measurementId: "G-7NT32J6G7Q"

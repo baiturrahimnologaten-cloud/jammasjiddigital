@@ -298,16 +298,21 @@ function initFormValues() {
   document.getElementById("num-offset-maghrib").value = localData.offsets.maghrib || 0;
   document.getElementById("num-offset-isya").value = localData.offsets.isya || 0;
 
-  // Firebase Tab
-  document.getElementById("chk-firebase-enable").checked = localData.firebase.enabled;
-  document.getElementById("txt-fb-apikey").value = localData.firebase.apiKey || "";
-  document.getElementById("txt-fb-authdomain").value = localData.firebase.authDomain || "";
-  document.getElementById("txt-fb-projectid").value = localData.firebase.projectId || "";
-  document.getElementById("txt-fb-storagebucket").value = localData.firebase.storageBucket || "";
-  document.getElementById("txt-fb-senderid").value = localData.firebase.messagingSenderId || "";
-  document.getElementById("txt-fb-appid").value = localData.firebase.appId || "";
-
-  toggleFirebaseFields(localData.firebase.enabled);
+  // Firebase Status Display
+  const lblStatus = document.getElementById("lbl-cloud-status");
+  const lblProject = document.getElementById("lbl-cloud-project-id");
+  if (lblProject) {
+    lblProject.innerText = (window.firebaseConfig && window.firebaseConfig.projectId) ? window.firebaseConfig.projectId : "-";
+  }
+  if (lblStatus) {
+    if (window.firebaseConfig && window.firebaseConfig.projectId && window.firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
+      lblStatus.innerText = "Terhubung ke Cloud";
+      lblStatus.style.color = "#10b981";
+    } else {
+      lblStatus.innerText = "Tidak Aktif";
+      lblStatus.style.color = "#ef4444";
+    }
+  }
 }
 
 /**
@@ -334,22 +339,6 @@ function initSliders() {
     setupSliderLabel(`val-iqomah-${p}`, `val-iqomah-${p}-label`, "Menit");
   });
 
-  // Firebase slider toggle display
-  const fbToggle = document.getElementById("chk-firebase-enable");
-  fbToggle.addEventListener("change", (e) => {
-    toggleFirebaseFields(e.target.checked);
-  });
-}
-
-function toggleFirebaseFields(isEnabled) {
-  const fields = document.getElementById("firebase-config-fields");
-  if (isEnabled) {
-    fields.style.opacity = "1";
-    fields.style.pointerEvents = "auto";
-  } else {
-    fields.style.opacity = "0.4";
-    fields.style.pointerEvents = "none";
-  }
 }
 
 /**
@@ -669,14 +658,7 @@ function saveAllChanges() {
     isya: parseInt(document.getElementById("num-offset-isya").value) || 0
   };
 
-  // Firebase
-  localData.firebase.enabled = document.getElementById("chk-firebase-enable").checked;
-  localData.firebase.apiKey = document.getElementById("txt-fb-apikey").value.trim();
-  localData.firebase.authDomain = document.getElementById("txt-fb-authdomain").value.trim();
-  localData.firebase.projectId = document.getElementById("txt-fb-projectid").value.trim();
-  localData.firebase.storageBucket = document.getElementById("txt-fb-storagebucket").value.trim();
-  localData.firebase.messagingSenderId = document.getElementById("txt-fb-senderid").value.trim();
-  localData.firebase.appId = document.getElementById("txt-fb-appid").value.trim();
+  // Firebase sync settings are read from firebase-config.js and forced by DataStore
 
   // Show loading overlay
   const overlay = document.getElementById("loading-overlay");

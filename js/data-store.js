@@ -102,7 +102,7 @@ class DataStore {
       }
     }
 
-    // Inject global Firebase config if defined in js/firebase-config.js
+    // Force inject global Firebase config if defined in js/firebase-config.js
     if (window.firebaseConfig && window.firebaseConfig.projectId && window.firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
       loadedData.firebase = {
         enabled: true,
@@ -114,6 +114,13 @@ class DataStore {
 
   // Save to local storage
   saveLocal(data) {
+    // Force inject Firebase configuration to local copy if valid config is present
+    if (window.firebaseConfig && window.firebaseConfig.projectId && window.firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
+      data.firebase = {
+        enabled: true,
+        ...window.firebaseConfig
+      };
+    }
     this.data = data;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     this.notifyListeners();
@@ -296,8 +303,14 @@ class DataStore {
       this.firebaseUnsubscribe = db.collection('masjid').doc('config').onSnapshot((doc) => {
         if (doc.exists) {
           const cloudData = doc.data();
-          // To prevent infinite loop, compare locally first
-          if (JSON.stringify(cloudData) !== JSON.stringify(this.data)) {
+          
+          // Compare data without the firebase configuration to avoid infinite loops
+          const cleanLocal = { ...this.data };
+          const cleanCloud = { ...cloudData };
+          delete cleanLocal.firebase;
+          delete cleanCloud.firebase;
+
+          if (JSON.stringify(cleanCloud) !== JSON.stringify(cleanLocal)) {
             console.log("Received data updates from Firebase Cloud");
             this.saveLocal({ ...this.data, ...cloudData });
           }

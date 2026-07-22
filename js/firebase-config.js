@@ -5,10 +5,10 @@
  * lalu salin detail konfigurasi Web App Anda ke bawah ini.
  */
 window.firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAqGrW3LfCEZurfIV2f2EKy0pQeKf5_0Xo",
+  authDomain: "masjid-baiturrahim-30958.firebaseapp.com",
+  projectId: "masjid-baiturrahim-30958",
+  storageBucket: "masjid-baiturrahim-30958.firebasestorage.app",
+  messagingSenderId: "278071318692",
+  appId: "1:278071318692:web:4eb7d88682ad7923636e31"
 };

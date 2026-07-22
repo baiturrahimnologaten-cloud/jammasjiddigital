@@ -479,61 +479,39 @@
       <!-- 6. FIREBASE CLOUD SYNC TAB -->
       <section class="tab-content" id="tab-firebase">
         <div class="card">
-          <div class="card-title">Kontrol Jarak Jauh Nirkabel (Firebase Cloud Sync)</div>
+          <div class="card-title">Status Sinkronisasi Cloud (Real-Time)</div>
           
-          <div class="firebase-toggle">
+          <div class="cloud-status-card" style="background: linear-gradient(135deg, rgba(36, 179, 109, 0.15), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.2); padding: 25px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px;">
+            <div class="cloud-icon-wrapper" style="width: 60px; height: 60px; background: rgba(16, 185, 129, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative;">
+              <svg width="32" height="32" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24" style="animation: pulse 2s infinite ease-in-out;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+              </svg>
+              <div class="ping-indicator" style="position: absolute; width: 12px; height: 12px; background-color: #10b981; border-radius: 50%; right: 2px; bottom: 2px; border: 2px solid var(--card-bg);"></div>
+            </div>
             <div>
-              <h4 style="font-size: 1.05rem; font-weight: 600;">Aktifkan Sinkronisasi Awan (Firebase)</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">Hubungkan ke cloud untuk mengubah data dari HP/Laptop secara jarak jauh lewat internet.</p>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="chk-firebase-enable">
-              <span class="slider-switch"></span>
-            </label>
-          </div>
-
-          <div id="firebase-config-fields" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="txt-fb-apikey">API Key</label>
-                <input type="text" id="txt-fb-apikey" placeholder="AIzaSyA1...">
-              </div>
-              <div class="form-group">
-                <label for="txt-fb-authdomain">Auth Domain</label>
-                <input type="text" id="txt-fb-authdomain" placeholder="project-id.firebaseapp.com">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="txt-fb-projectid">Project ID</label>
-                <input type="text" id="txt-fb-projectid" placeholder="project-id">
-              </div>
-              <div class="form-group">
-                <label for="txt-fb-storagebucket">Storage Bucket</label>
-                <input type="text" id="txt-fb-storagebucket" placeholder="project-id.appspot.com">
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="txt-fb-senderid">Messaging Sender ID</label>
-                <input type="text" id="txt-fb-senderid" placeholder="123456789012">
-              </div>
-              <div class="form-group">
-                <label for="txt-fb-appid">App ID</label>
-                <input type="text" id="txt-fb-appid" placeholder="1:123456789012:web:abc123xyz">
-              </div>
+              <h4 style="font-size: 1.15rem; font-weight: 700; color: #10b981; margin: 0;">Sinkronisasi Cloud Aktif</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">Data disinkronkan secara nirkabel dan real-time ke semua perangkat (HP, PC, TV Display) via Firebase Firestore.</p>
             </div>
           </div>
 
-          <div style="background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; margin-top: 10px;">
-            <h5 style="font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Cara Menghubungkan Jarak Jauh (Nirkabel):</h5>
-            <ol style="padding-left: 20px; color: var(--text-muted);">
-              <li>Buat proyek Firebase gratis di console.firebase.google.com.</li>
-              <li>Tambahkan aplikasi berbasis Web, lalu salin objek Konfigurasi Firebase (Firebase SDK Config).</li>
-              <li>Tempelkan nilai konfigurasi tersebut ke kolom input di atas, lalu centang sakelar "Aktifkan Sinkronisasi Awan".</li>
-              <li>Di konsol Firebase, aktifkan layanan <strong>Cloud Firestore</strong> di bagian database, dan setel aturan keamanan (Security Rules) menjadi mode baca & tulis (read/write).</li>
-              <li>Klik tombol "Simpan Perubahan". Aplikasi TV Masjid dan Dashboard di HP Anda sekarang terhubung secara real-time nirkabel!</li>
-            </ol>
+          <div class="cloud-details-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block;">Status Koneksi</span>
+              <strong id="lbl-cloud-status" style="font-size: 0.95rem; color: #10b981; display: block; margin-top: 4px;">Terhubung ke Cloud</strong>
+            </div>
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block;">Project ID</span>
+              <strong id="lbl-cloud-project-id" style="font-size: 0.95rem; color: var(--text-main); display: block; margin-top: 4px; font-family: monospace;">-</strong>
+            </div>
+            <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; display: block;">Mode Database</span>
+              <strong style="font-size: 0.95rem; color: var(--text-main); display: block; margin-top: 4px;">Cloud Firestore</strong>
+            </div>
+          </div>
+
+          <div style="background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6;">
+            <h5 style="font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Informasi Sistem:</h5>
+            <p style="color: var(--text-muted); margin: 0;">Sistem saat ini dikonfigurasi melalui berkas <code style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.8rem;">js/firebase-config.js</code>. Untuk merestart atau mengganti kredensial database cloud, silakan edit berkas tersebut secara langsung di repositori web Anda.</p>
           </div>
         </div>
       </section>
