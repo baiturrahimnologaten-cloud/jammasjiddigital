@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 3. Verify Admin login session
   verifyAdminSession();
+
+  // 4. Initialize password visibility eye toggles
+  initPasswordToggles();
 });
 
 function verifyAdminSession() {
@@ -560,6 +563,33 @@ function initMarqueeList() {
   });
 
   renderMarquees();
+}
+
+/**
+ * Initialize password show/hide eye toggle buttons
+ */
+function initPasswordToggles() {
+  const toggleBtns = document.querySelectorAll(".password-toggle-btn");
+  toggleBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-target");
+      const targetInput = document.getElementById(targetId);
+      const eyeShow = btn.querySelector(".eye-show");
+      const eyeHide = btn.querySelector(".eye-hide");
+      
+      if (targetInput && eyeShow && eyeHide) {
+        if (targetInput.type === "password") {
+          targetInput.type = "text";
+          eyeShow.style.display = "none";
+          eyeHide.style.display = "block";
+        } else {
+          targetInput.type = "password";
+          eyeShow.style.display = "block";
+          eyeHide.style.display = "none";
+        }
+      }
+    });
+  });
 }
 
 /**
