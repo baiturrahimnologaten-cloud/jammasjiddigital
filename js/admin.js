@@ -99,6 +99,7 @@ function initDashboard() {
   initUploadListeners();
   initLocationDetector();
   initFinanceEvents();
+  initMobileNavigation();
 
   // Register Global Save Event
   document.getElementById("btn-save-global").addEventListener("click", saveAllChanges);
@@ -292,6 +293,8 @@ function initFormValues() {
 
   // Set default previews
   document.getElementById("sidebar-logo").src = localData.logoUrl;
+  const mobLogo = document.getElementById("mobile-navbar-logo");
+  if (mobLogo) mobLogo.src = localData.logoUrl;
   document.getElementById("img-logo-preview").src = localData.logoUrl;
   document.getElementById("img-qris-preview").src = localData.qrisUrl;
 
@@ -475,6 +478,45 @@ function initFinanceEvents() {
 }
 
 /**
+ * Mobile sidebar drawer navigation logic
+ */
+function initMobileNavigation() {
+  const toggleBtn = document.getElementById("btn-toggle-sidebar");
+  const sidebar = document.querySelector("aside");
+  
+  // Create backdrop overlay
+  let overlay = document.querySelector(".sidebar-overlay");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.className = "sidebar-overlay";
+    document.body.appendChild(overlay);
+  }
+  
+  if (toggleBtn && sidebar) {
+    // Open sidebar
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.add("show");
+      overlay.classList.add("show");
+    });
+    
+    // Close sidebar on overlay click
+    overlay.addEventListener("click", () => {
+      sidebar.classList.remove("show");
+      overlay.classList.remove("show");
+    });
+    
+    // Close sidebar when clicking any navigation link
+    const navLinks = document.querySelectorAll(".nav-item");
+    navLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        sidebar.classList.remove("show");
+        overlay.classList.remove("show");
+      });
+    });
+  }
+}
+
+/**
  * Image Upload Listeners (Logo, QRIS, & Activities Photos)
  */
 function initUploadListeners() {
@@ -488,6 +530,8 @@ function initUploadListeners() {
         localData.logoUrl = compressedBase64;
         document.getElementById("img-logo-preview").src = compressedBase64;
         document.getElementById("sidebar-logo").src = compressedBase64;
+        const mobLogo = document.getElementById("mobile-navbar-logo");
+        if (mobLogo) mobLogo.src = compressedBase64;
       } catch (err) {
         alert("Gagal memproses gambar logo.");
       }
