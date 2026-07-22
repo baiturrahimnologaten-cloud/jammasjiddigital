@@ -114,15 +114,18 @@ class DataStore {
 
   // Save to local storage
   saveLocal(data) {
+    // Sanitize data by converting to plain JSON to strip undefined values or custom prototypes
+    const sanitized = JSON.parse(JSON.stringify(data));
+    
     // Force inject Firebase configuration to local copy if valid config is present
     if (window.firebaseConfig && window.firebaseConfig.projectId && window.firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
-      data.firebase = {
+      sanitized.firebase = {
         enabled: true,
         ...window.firebaseConfig
       };
     }
-    this.data = data;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    this.data = sanitized;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized));
     this.notifyListeners();
   }
 
@@ -331,7 +334,9 @@ class DataStore {
     if (!this.firebaseInitialized) return Promise.resolve();
     try {
       const db = firebase.firestore();
-      return db.collection('masjid').doc('config').set(data)
+      // Sanitize data by converting to plain JSON to strip undefined values or custom prototypes
+      const sanitized = JSON.parse(JSON.stringify(data));
+      return db.collection('masjid').doc('config').set(sanitized)
         .then(() => {
           console.log("Cloud database synchronized");
         })
