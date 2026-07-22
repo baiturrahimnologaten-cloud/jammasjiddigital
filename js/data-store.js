@@ -117,14 +117,15 @@ class DataStore {
     return this.data;
   }
 
-  // Update data and sync
-  updateData(newData) {
+  // Update data and sync (returns Promise to handle loading status in UI)
+  async updateData(newData) {
     this.saveLocal(newData);
     
     // Sync to Firebase if enabled
     if (this.data.firebase && this.data.firebase.enabled && this.firebaseInitialized) {
-      this.syncToFirebase(newData);
+      return this.syncToFirebase(newData);
     }
+    return Promise.resolve();
   }
 
   // Register listener for real-time updates
@@ -237,17 +238,22 @@ class DataStore {
     }
   }
 
-  // Upload/Sync data to Firebase
+  // Upload/Sync data to Firebase (returns Promise)
   syncToFirebase(data) {
-    if (!this.firebaseInitialized) return;
+    if (!this.firebaseInitialized) return Promise.resolve();
     try {
       const db = firebase.firestore();
-      // Remove sensitive/local fields if necessary, or sync everything
-      db.collection('masjid').doc('config').set(data)
-        .then(() => console.log("Cloud database synchronized"))
-        .catch(err => console.error("Cloud database synchronization failed", err));
+      return db.collection('masjid').doc('config').set(data)
+        .then(() => {
+          console.log("Cloud database synchronized");
+        })
+        .catch(err => {
+          console.error("Cloud database synchronization failed", err);
+          throw err;
+        });
     } catch (e) {
       console.error("Firebase sync error", e);
+      return Promise.reject(e);
     }
   }
 }

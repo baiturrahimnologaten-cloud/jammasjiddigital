@@ -529,23 +529,41 @@ function saveAllChanges() {
   localData.firebase.messagingSenderId = document.getElementById("txt-fb-senderid").value.trim();
   localData.firebase.appId = document.getElementById("txt-fb-appid").value.trim();
 
-  // Commit changes to Unified Store (which writes to LocalStorage & optional Firebase database)
-  window.dataStore.updateData(localData);
+  // Show loading overlay
+  const overlay = document.getElementById("loading-overlay");
+  if (overlay) overlay.classList.add("show");
 
-  // Show "Perubahan Disimpan" toast/indicator in header
-  const indicator = document.getElementById("save-indicator");
-  if (localData.firebase && localData.firebase.enabled) {
-    indicator.innerText = "Perubahan disinkronkan ke Cloud & Lokal!";
-    indicator.style.color = "#10b981"; // Success green color
-  } else {
-    indicator.innerText = "Perubahan disimpan secara lokal!";
-    indicator.style.color = ""; // Default style color
-  }
-  indicator.classList.add("show");
-  
-  setTimeout(() => {
-    indicator.classList.remove("show");
-  }, 3500);
+  const startTime = Date.now();
+
+  // Commit changes to Unified Store (which writes to LocalStorage & optional Firebase database)
+  window.dataStore.updateData(localData)
+    .then(() => {
+      // Calculate remaining delay to ensure smooth transition (min 800ms)
+      const duration = Date.now() - startTime;
+      const minDelay = 800;
+      const finalDelay = Math.max(0, minDelay - duration);
+
+      setTimeout(() => {
+        if (overlay) overlay.classList.remove("show");
+        
+        if (localData.firebase && localData.firebase.enabled) {
+          showToast("Sinkronisasi Berhasil", "Data berhasil disinkronkan ke Cloud & Lokal!", "success");
+        } else {
+          showToast("Berhasil Disimpan", "Data berhasil disimpan di penyimpanan lokal!", "success");
+        }
+      }, finalDelay);
+    })
+    .catch((err) => {
+      console.error("Save error:", err);
+      const duration = Date.now() - startTime;
+      const minDelay = 800;
+      const finalDelay = Math.max(0, minDelay - duration);
+
+      setTimeout(() => {
+        if (overlay) overlay.classList.remove("show");
+        showToast("Gagal Sinkronisasi", "Gagal menyimpan ke Cloud. Periksa koneksi internet.", "error");
+      }, finalDelay);
+    });
 }
 
 /**
@@ -701,3 +719,45 @@ function playBuzzerTone(toneType, count = 3) {
     console.warn("Could not play sound: Web Audio API blocked or not supported", err);
   }
 }
+
+/**
+ * Show a premium toast notification
+ */
+function showToast(title, message, type = "success") {
+  const toast = document.getElementById("toast-notification");
+  const toastTitle = document.getElementById("toast-title");
+  const toastMessage = document.getElementById("toast-message");
+  const toastIcon = document.getElementById("toast-icon");
+  
+  if (!toast || !toastTitle || !toastMessage || !toastIcon) return;
+  
+  toastTitle.innerText = title;
+  toastMessage.innerText = message;
+  
+  // Set type classes
+  toast.className = "toast-notification";
+  toast.classList.add(type);
+  
+  if (type === "success") {
+    toastIcon.innerHTML = `
+      <svg width="20" height="20" fill="none" stroke="#10b981" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    `;
+  } else {
+    toastIcon.innerHTML = `
+      <svg width="20" height="20" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    `;
+  }
+  
+  toast.classList.add("show");
+  
+  // Auto hide after 4 seconds
+  if (window.toastTimeout) clearTimeout(window.toastTimeout);
+  window.toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 4000);
+}
+
