@@ -928,3 +928,88 @@ input:checked + .slider-switch:before {
   color: var(--text-main);
 }
 
+/* --- FINANCE GRID RESPONSIVE --- */
+.finance-grid {
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 900px) {
+  .finance-grid {
+    grid-template-columns: 1.2fr 1.8fr;
+  }
+}
+
+/* --- PHOTO UPLOAD ROW RESPONSIVE --- */
+.upload-photo-row {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 769px) {
+  .upload-photo-row {
+    grid-template-columns: 2.5fr 1fr;
+  }
+}
+
+/* --- TRANSACTION TYPE TOGGLE PILLS --- */
+.transaction-type-toggle {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.btn-type-toggle {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-type-toggle:hover {
+  background: var(--bg-color);
+  color: var(--text-main);
+  border-color: var(--text-muted);
+}
+
+.btn-type-toggle.active[data-type="income"] {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.btn-type-toggle.active[data-type="expense"] {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* --- RESPONSIVE HEADER OVERRIDES --- */
+@media (max-width: 768px) {
+  header.content-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding-bottom: 15px;
+  }
+  
+  header.content-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+

@@ -98,6 +98,7 @@ function initDashboard() {
   initMarqueeList();
   initUploadListeners();
   initLocationDetector();
+  initFinanceEvents();
 
   // Register Global Save Event
   document.getElementById("btn-save-global").addEventListener("click", saveAllChanges);
@@ -168,10 +169,33 @@ function initDashboard() {
       }
       localData.infaqTransactions.push(newTx);
       
-      // Clear inputs
+      // Clear inputs and helper
       document.getElementById("val-tx-amount").value = "";
+      const helperDiv = document.getElementById("val-tx-amount-helper");
+      if (helperDiv) helperDiv.innerText = "";
+      
       document.getElementById("val-tx-desc").value = "";
       document.getElementById("val-tx-date").value = new Date().toISOString().split('T')[0];
+      
+      // Reset type toggle back to income
+      const hiddenTypeInput = document.getElementById("val-tx-type");
+      if (hiddenTypeInput) hiddenTypeInput.value = "income";
+      
+      const typeBtns = document.querySelectorAll(".btn-type-toggle");
+      typeBtns.forEach(btn => {
+        const type = btn.getAttribute("data-type");
+        if (type === "income") {
+          btn.classList.add("active");
+          btn.style.borderColor = "#10b981";
+          btn.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+          btn.style.color = "#10b981";
+        } else {
+          btn.classList.remove("active");
+          btn.style.background = "var(--card-bg)";
+          btn.style.color = "var(--text-muted)";
+          btn.style.borderColor = "var(--border-color)";
+        }
+      });
       
       // Save and re-render
       saveAllChanges();
@@ -379,6 +403,75 @@ function initLocationDetector() {
       alert("Fitur Geolocation tidak didukung di browser ini.");
     }
   });
+}
+
+/**
+ * Finance events (pill toggles, live formatter, search/filter)
+ */
+function initFinanceEvents() {
+  // 1. Transaction Type Toggle logic
+  const typeBtns = document.querySelectorAll(".btn-type-toggle");
+  const hiddenTypeInput = document.getElementById("val-tx-type");
+  
+  typeBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Remove active class from all toggle buttons
+      typeBtns.forEach(b => {
+        b.classList.remove("active");
+        b.style.background = "var(--card-bg)";
+        b.style.color = "var(--text-muted)";
+        b.style.borderColor = "var(--border-color)";
+      });
+      
+      // Add active state to clicked button
+      btn.classList.add("active");
+      const type = btn.getAttribute("data-type");
+      hiddenTypeInput.value = type;
+      
+      // Dynamic color/border for active buttons
+      if (type === "income") {
+        btn.style.borderColor = "#10b981";
+        btn.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+        btn.style.color = "#10b981";
+      } else {
+        btn.style.borderColor = "#ef4444";
+        btn.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+        btn.style.color = "#ef4444";
+      }
+    });
+  });
+
+  // 2. Real-time Rupiah live formatter helper
+  const amountInput = document.getElementById("val-tx-amount");
+  const helperDiv = document.getElementById("val-tx-amount-helper");
+  
+  if (amountInput && helperDiv) {
+    const updateHelper = () => {
+      const val = parseInt(amountInput.value);
+      if (isNaN(val) || val <= 0) {
+        helperDiv.innerText = "";
+      } else {
+        const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+        helperDiv.innerText = `Konfirmasi: ${formatted.replace("Rp", "Rp ")}`;
+      }
+    };
+    amountInput.addEventListener("input", updateHelper);
+  }
+
+  // 3. Search and type filter in ledger table
+  const searchInput = document.getElementById("tx-search-input");
+  const typeFilter = document.getElementById("tx-type-filter");
+  
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      renderFinanceLedger();
+    });
+  }
+  if (typeFilter) {
+    typeFilter.addEventListener("change", () => {
+      renderFinanceLedger();
+    });
+  }
 }
 
 /**
@@ -921,9 +1014,25 @@ function renderFinanceLedger() {
   if (!tbody || !emptyState || !countBadge) return;
   
   const transactions = localData.infaqTransactions || [];
-  countBadge.innerText = `${transactions.length} Transaksi`;
   
-  if (transactions.length === 0) {
+  // Filter and Search logic!
+  const searchVal = document.getElementById("tx-search-input") ? document.getElementById("tx-search-input").value.toLowerCase().trim() : "";
+  const typeFilterVal = document.getElementById("tx-type-filter") ? document.getElementById("tx-type-filter").value : "all";
+  
+  let filteredTxs = [...transactions];
+  if (typeFilterVal !== "all") {
+    filteredTxs = filteredTxs.filter(tx => tx.type === typeFilterVal);
+  }
+  if (searchVal) {
+    filteredTxs = filteredTxs.filter(tx => 
+      (tx.description && tx.description.toLowerCase().includes(searchVal)) || 
+      (tx.date && tx.date.includes(searchVal))
+    );
+  }
+  
+  countBadge.innerText = `${filteredTxs.length} Transaksi`;
+  
+  if (filteredTxs.length === 0) {
     tbody.innerHTML = "";
     emptyState.style.display = "block";
     return;
@@ -932,18 +1041,26 @@ function renderFinanceLedger() {
   emptyState.style.display = "none";
   
   // Sort transactions by date descending (newest on top)
-  const sortedTxs = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedTxs = filteredTxs.sort((a, b) => new Date(b.date) - new Date(a.date));
   
   tbody.innerHTML = sortedTxs.map(tx => {
+    const isIncome = tx.type === 'income';
+    const badgeHtml = isIncome 
+      ? `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-block;">+ Masuk</span>`
+      : `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 700; display: inline-block;">- Keluar</span>`;
+
     return `
-      <tr style="border-bottom: 1px solid var(--border-color);">
+      <tr style="border-bottom: 1px solid var(--border-color); transition: background-color 0.2s;">
         <td style="padding: 12px 10px; color: var(--text-muted); white-space: nowrap;">${tx.date}</td>
-        <td style="padding: 12px 10px; font-weight: 500; color: var(--text-main);">${tx.description}</td>
-        <td style="padding: 12px 10px; text-align: right; font-weight: 700; color: ${tx.type === 'income' ? '#10b981' : '#ef4444'};">
-          ${tx.type === 'income' ? '+' : '-'} ${formatRupiah(tx.amount).replace("Rp", "Rp ")}
+        <td style="padding: 12px 10px;">
+          <div style="font-weight: 600; color: var(--text-main); font-size: 0.9rem;">${tx.description}</div>
+          <div style="margin-top: 4px;">${badgeHtml}</div>
+        </td>
+        <td style="padding: 12px 10px; text-align: right; font-weight: 800; font-size: 0.95rem; color: ${isIncome ? '#10b981' : '#ef4444'};">
+          ${isIncome ? '+' : '-'} ${formatRupiah(tx.amount).replace("Rp", "Rp ")}
         </td>
         <td style="padding: 12px 5px; text-align: center;">
-          <button type="button" class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: var(--danger-color); cursor: pointer; padding: 2px 5px; display: inline-flex; align-items: center; justify-content: center;">
+          <button type="button" class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: var(--danger-color); cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(239,68,68,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10v-3a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </button>
         </td>
@@ -951,7 +1068,7 @@ function renderFinanceLedger() {
     `;
   }).join("");
   
-  // Bind delete event listeners (uses custom confirm modal instead of browser's raw confirm box)
+  // Bind delete event listeners
   const deleteBtns = tbody.querySelectorAll(".btn-delete-tx");
   deleteBtns.forEach(btn => {
     btn.addEventListener("click", (e) => {

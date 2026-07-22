@@ -783,3 +783,168 @@ main {
   padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
+
+/* --- MOBILE RESPONSIVENESS (max-width: 768px) --- */
+@media (max-width: 768px) {
+  body {
+    height: auto;
+    width: 100vw;
+    overflow-y: auto;
+    padding: 15px;
+    gap: 15px;
+  }
+  
+  header {
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    padding: 20px 15px;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .masjid-logo {
+    height: 70px;
+    width: 70px;
+  }
+  
+  .masjid-info h1 {
+    font-size: 1.6rem;
+  }
+  
+  .masjid-info p {
+    font-size: 0.85rem;
+  }
+  
+  .header-right {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .datetime-container {
+    align-items: center;
+  }
+  
+  .clock-main {
+    font-size: 2.5rem;
+  }
+  
+  .date-sub {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+  
+  main {
+    height: auto;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .left-column {
+    height: auto;
+    gap: 20px;
+  }
+  
+  .slideshow-area {
+    height: 250px;
+    flex: none;
+  }
+  
+  .slide-caption p {
+    font-size: 1.1rem;
+  }
+  
+  .prayer-times-bar {
+    height: auto;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .prayer-card {
+    padding: 12px 8px;
+  }
+  
+  .prayer-name {
+    font-size: 0.85rem;
+  }
+  
+  .prayer-time {
+    font-size: 1.4rem;
+  }
+  
+  .right-column {
+    height: auto;
+    gap: 20px;
+  }
+  
+  .qris-card {
+    height: 320px;
+    flex: none;
+  }
+  
+  .qris-standalone-img {
+    height: 90%;
+    max-height: 90%;
+  }
+  
+  .finance-card {
+    height: auto;
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .finance-main .balance-val {
+    font-size: 1.8rem;
+  }
+  
+  .running-text-bar {
+    height: auto;
+    padding: 12px 15px;
+    margin-top: 10px;
+  }
+  
+  /* Financial Transparency Overlay on mobile */
+  .recap-modal-card {
+    padding: 15px;
+    width: 95%;
+  }
+  
+  .recap-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .recap-summary-box {
+    padding: 10px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .recap-summary-box label {
+    margin-bottom: 0;
+  }
+  
+  .recap-summary-box span {
+    font-size: 1rem;
+  }
+  
+  .recap-table th, .recap-table td {
+    padding: 8px 6px;
+    font-size: 0.75rem;
+  }
+}
+
+/* For very small devices like iPhone SE */
+@media (max-width: 380px) {
+  .prayer-times-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

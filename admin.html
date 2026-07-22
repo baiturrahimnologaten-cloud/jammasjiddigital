@@ -174,37 +174,37 @@
         <!-- 2.1 Financial Recap Cards -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
           <!-- Saldo Card -->
-          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid var(--accent-color);">
-            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">SALDO KAS MASJID</div>
-            <div id="recap-balance" style="font-size: 1.6rem; font-weight: 800; margin-top: 5px; color: var(--text-main);">Rp 0</div>
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid var(--accent-color); background: linear-gradient(135deg, var(--card-bg), rgba(14, 165, 233, 0.03));">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">SALDO KAS MASJID</div>
+            <div id="recap-balance" style="font-size: 1.8rem; font-weight: 800; margin-top: 5px; color: var(--text-main);">Rp 0</div>
           </div>
           <!-- Weekly Recap -->
-          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #10b981;">
-            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP SEMINGGU INI</div>
-            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
-              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-week-income">Rp 0</span></span>
-              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-week-expense">Rp 0</span></span>
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #10b981; background: linear-gradient(135deg, var(--card-bg), rgba(16, 185, 129, 0.03));">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">REKAP SEMINGGU INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.95rem;">
+              <span style="display: flex; flex-direction: column;"><span style="font-size: 0.72rem; color: var(--text-muted);">Masuk</span><span style="color: #10b981; font-weight: 700;" id="recap-week-income">Rp 0</span></span>
+              <span style="display: flex; flex-direction: column; text-align: right;"><span style="font-size: 0.72rem; color: var(--text-muted);">Keluar</span><span style="color: #ef4444; font-weight: 700;" id="recap-week-expense">Rp 0</span></span>
             </div>
           </div>
           <!-- Monthly Recap -->
-          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #3b82f6;">
-            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP BULAN INI</div>
-            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
-              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-month-income">Rp 0</span></span>
-              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-month-expense">Rp 0</span></span>
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #3b82f6; background: linear-gradient(135deg, var(--card-bg), rgba(59, 130, 246, 0.03));">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">REKAP BULAN INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.95rem;">
+              <span style="display: flex; flex-direction: column;"><span style="font-size: 0.72rem; color: var(--text-muted);">Masuk</span><span style="color: #10b981; font-weight: 700;" id="recap-month-income">Rp 0</span></span>
+              <span style="display: flex; flex-direction: column; text-align: right;"><span style="font-size: 0.72rem; color: var(--text-muted);">Keluar</span><span style="color: #ef4444; font-weight: 700;" id="recap-month-expense">Rp 0</span></span>
             </div>
           </div>
           <!-- Yearly Recap -->
-          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #8b5cf6;">
-            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; letter-spacing: 0.5px;">REKAP TAHUN INI</div>
-            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.9rem;">
-              <span style="color: #10b981; font-weight: 600;">+ <span id="recap-year-income">Rp 0</span></span>
-              <span style="color: #ef4444; font-weight: 600;">- <span id="recap-year-expense">Rp 0</span></span>
+          <div class="card" style="margin-bottom: 0; padding: 20px; border-left: 5px solid #8b5cf6; background: linear-gradient(135deg, var(--card-bg), rgba(139, 92, 246, 0.03));">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">REKAP TAHUN INI</div>
+            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.95rem;">
+              <span style="display: flex; flex-direction: column;"><span style="font-size: 0.72rem; color: var(--text-muted);">Masuk</span><span style="color: #10b981; font-weight: 700;" id="recap-year-income">Rp 0</span></span>
+              <span style="display: flex; flex-direction: column; text-align: right;"><span style="font-size: 0.72rem; color: var(--text-muted);">Keluar</span><span style="color: #ef4444; font-weight: 700;" id="recap-year-expense">Rp 0</span></span>
             </div>
           </div>
         </div>
 
-        <div class="dashboard-grid" style="grid-template-columns: 1.2fr 1.8fr; gap: 20px;">
+        <div class="dashboard-grid finance-grid">
           <!-- Left: Input Form + QRIS -->
           <div style="display: flex; flex-direction: column; gap: 20px;">
             <!-- Form Card -->
@@ -217,11 +217,17 @@
               </div>
               
               <div class="form-group" style="margin-top: 10px;">
-                <label for="val-tx-type">Jenis Transaksi</label>
-                <select id="val-tx-type" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-main); font-family: inherit; width: 100%; margin-top: 6px;">
-                  <option value="income">Pemasukan (Uang Masuk / Infaq)</option>
-                  <option value="expense">Pengeluaran (Uang Keluar / Belanja)</option>
-                </select>
+                <label>Jenis Transaksi</label>
+                <div class="transaction-type-toggle" style="display: flex; gap: 10px; margin-top: 6px;">
+                  <button type="button" class="btn-type-toggle active" data-type="income" style="flex: 1; padding: 10px; border-radius: 8px; border: 2px solid #10b981; background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: bold; cursor: pointer; text-align: center; transition: all 0.2s;">
+                    🟢 Pemasukan
+                  </button>
+                  <button type="button" class="btn-type-toggle" data-type="expense" style="flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--card-bg); color: var(--text-muted); font-weight: bold; cursor: pointer; text-align: center; transition: all 0.2s;">
+                    🔴 Pengeluaran
+                  </button>
+                </div>
+                <!-- Hidden input to hold type value -->
+                <input type="hidden" id="val-tx-type" value="income">
               </div>
               
               <div class="form-group" style="margin-top: 10px;">
@@ -230,6 +236,8 @@
                   <input type="number" id="val-tx-amount" placeholder="Contoh: 50000">
                   <span>Rp</span>
                 </div>
+                <!-- Live format viewer to prevent digit count errors -->
+                <div id="val-tx-amount-helper" style="font-size: 0.8rem; color: var(--accent-color); margin-top: 5px; font-weight: 600; min-height: 1.2em;"></div>
               </div>
               
               <div class="form-group" style="margin-top: 10px;">
@@ -261,18 +269,28 @@
 
           <!-- Right: Transactions Ledger Table -->
           <div class="card" style="padding: 20px; display: flex; flex-direction: column; min-height: 550px; margin-bottom: 0;">
-            <div class="card-title" style="margin-bottom: 15px; border-bottom: none; padding-bottom: 0; display: flex; justify-content: space-between; align-items: center;">
+            <div class="card-title" style="margin-bottom: 15px; border-bottom: none; padding-bottom: 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
               <span>Catatan Transaksi Keuangan</span>
               <span id="tx-count-badge" style="font-size: 0.8rem; background: var(--border-color); color: var(--text-muted); padding: 3px 8px; border-radius: 12px; font-weight: 600;">0 Transaksi</span>
             </div>
             
-            <div style="flex-grow: 1; overflow-y: auto; max-height: 520px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color); margin-top: 10px;">
+            <!-- Filters & Search -->
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+              <input type="text" id="tx-search-input" placeholder="Cari keterangan / tanggal..." style="flex: 1; min-width: 150px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.85rem; font-family: inherit;">
+              <select id="tx-type-filter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.85rem; font-family: inherit; width: 140px; cursor: pointer;">
+                <option value="all">Semua Jenis</option>
+                <option value="income">🟢 Pemasukan</option>
+                <option value="expense">🔴 Pengeluaran</option>
+              </select>
+            </div>
+            
+            <div style="flex-grow: 1; overflow-y: auto; max-height: 480px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color);">
               <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
                 <thead>
                   <tr style="background: var(--card-bg); border-bottom: 2px solid var(--border-color); position: sticky; top: 0; z-index: 10;">
                     <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted); width: 90px;">Tanggal</th>
                     <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted);">Keterangan</th>
-                    <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted); text-align: right; width: 110px;">Jumlah</th>
+                    <th style="padding: 12px 10px; font-weight: 600; color: var(--text-muted); text-align: right; width: 120px;">Jumlah</th>
                     <th style="padding: 12px 5px; font-weight: 600; color: var(--text-muted); text-align: center; width: 45px;">Aksi</th>
                   </tr>
                 </thead>
@@ -293,7 +311,7 @@
         <div class="card">
           <div class="card-title">Unggah Foto Kegiatan Masjid</div>
           
-          <div class="form-row" style="align-items: flex-end; grid-template-columns: 2.5fr 1fr;">
+          <div class="form-row upload-photo-row" style="align-items: flex-end;">
             <div class="form-group">
               <label for="txt-photo-caption">Deskripsi / Keterangan Foto Kegiatan</label>
               <input type="text" id="txt-photo-caption" placeholder="Tulis caption kegiatan di sini (misal: Gotong Royong Kebersihan...)">
