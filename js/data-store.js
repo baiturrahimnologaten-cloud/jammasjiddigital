@@ -1,0 +1,256 @@
+/**
+ * Unified Data Store for Jam Digital Masjid.
+ * Manages LocalStorage and optional Firebase Real-time Cloud Synchronization.
+ */
+const STORAGE_KEY = 'masjid_digital_clock_data';
+
+const DEFAULT_DATA = {
+  adminPassword: "admin123",
+  mosqueName: "Masjid Baiturrahim Nologaten",
+  mosqueAddress: "Jl. Nologaten, Caturtunggal, Depok, Sleman, D.I. Yogyakarta",
+  latitude: -7.7828,
+  longitude: 110.4011,
+  timezone: 7, // WIB (UTC+7)
+  hijriOffset: 0,
+  infaqBalance: 12500000,
+  infaqIncome: 1850000,
+  infaqExpense: 450000,
+  qrisUrl: "assets/qris.png",
+  logoUrl: "assets/logo.png",
+  iqomah: {
+    subuh: 10,
+    dzuhur: 5,
+    ashar: 5,
+    maghrib: 5,
+    isya: 7
+  },
+  sholatDuration: 15, // minutes of blank screen
+  adzanDuration: 3, // minutes of adzan overlay
+  adzanTone: "adzan_long", // Nada alarm saat masuk waktu adzan (5x)
+  iqomahTone: "double_beep", // Nada alarm saat jeda iqomah selesai/sholat mulai (3x)
+  offsets: {
+    subuh: 2,
+    syuruq: -1,
+    dzuhur: 2,
+    ashar: 2,
+    maghrib: 2,
+    isya: 2
+  },
+  runningTexts: [
+    "Selamat Datang di Masjid Baiturrahim Nologaten. Harap meluruskan dan merapatkan shaf sholat.",
+    "Bagi jamaah yang membawa handphone, mohon dinonaktifkan atau disenyapkan selama ibadah sholat berlangsung.",
+    "Jumlah Infaq Jum'at yang lalu sebesar Rp 1.850.000,- Syukron Jazakumullah Khairan.",
+    "Kajian Rutin Ahad Pagi dilaksanakan pukul 06.00 WIB bersama Ustadz Pengampu."
+  ],
+  photos: [
+    { id: "1", url: "assets/photo1.png", caption: "Kajian Rutin Ba'da Maghrib Jamaah Masjid Baiturrahim" },
+    { id: "2", url: "assets/photo2.png", caption: "Penyaluran Bantuan Sosial & Sembako Kepada Warga Sekitar" },
+    { id: "3", url: "assets/photo3.png", caption: "Kerja Bakti Rutin Remaja Masjid Baiturrahim" }
+  ],
+  firebase: {
+    enabled: false,
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+  }
+};
+
+class DataStore {
+  constructor() {
+    this.listeners = [];
+    this.data = this.loadLocal();
+    this.firebaseInitialized = false;
+    this.firebaseUnsubscribe = null;
+
+    // Listen to localStorage updates from other windows (real-time local sync)
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY) {
+        this.data = this.loadLocal();
+        this.notifyListeners();
+      }
+    });
+
+    // Initialize Firebase if configured
+    this.initFirebase();
+  }
+
+  // Load from local storage with default fallback
+  loadLocal() {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    let loadedData = null;
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_DATA));
+      loadedData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    } else {
+      try {
+        const parsed = JSON.parse(raw);
+        // Merge with default to handle missing keys in future upgrades
+        loadedData = { ...DEFAULT_DATA, ...parsed };
+      } catch (e) {
+        console.error("Error parsing local storage, resetting to default", e);
+        loadedData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    }
+
+    // Inject global Firebase config if defined in js/firebase-config.js
+    if (window.firebaseConfig && window.firebaseConfig.projectId && window.firebaseConfig.projectId !== "YOUR_PROJECT_ID") {
+      loadedData.firebase = {
+        enabled: true,
+        ...window.firebaseConfig
+      };
+    }
+    return loadedData;
+  }
+
+  // Save to local storage
+  saveLocal(data) {
+    this.data = data;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    this.notifyListeners();
+  }
+
+  // Retrieve current data
+  getData() {
+    return this.data;
+  }
+
+  // Update data and sync
+  updateData(newData) {
+    this.saveLocal(newData);
+    
+    // Sync to Firebase if enabled
+    if (this.data.firebase && this.data.firebase.enabled && this.firebaseInitialized) {
+      this.syncToFirebase(newData);
+    }
+  }
+
+  // Register listener for real-time updates
+  onUpdate(callback) {
+    this.listeners.push(callback);
+    // Initial call
+    callback(this.data);
+    return () => {
+      this.listeners = this.listeners.filter(cb => cb !== callback);
+    };
+  }
+
+  notifyListeners() {
+    this.listeners.forEach(cb => cb(this.data));
+  }
+
+  /**
+   * Helper to compress images on upload to prevent exceeding localStorage/Firestore limits
+   */
+  compressImage(file, maxWidth = 800, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Resize if wider than maxWidth
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to PNG if original file is PNG to preserve transparency, otherwise JPEG
+          const outputFormat = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+          const compressedBase64 = outputFormat === 'image/png' 
+            ? canvas.toDataURL('image/png') 
+            : canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedBase64);
+        };
+        img.onerror = (err) => reject(err);
+      };
+      reader.onerror = (err) => reject(err);
+    });
+  }
+
+  /**
+   * Initialize Firebase if configured
+   */
+  initFirebase() {
+    const config = this.data.firebase;
+    if (config && config.enabled && config.projectId) {
+      if (typeof firebase !== 'undefined') {
+        try {
+          // If already initialized, we don't do it again
+          if (firebase.apps.length === 0) {
+            firebase.initializeApp(config);
+          }
+          this.firebaseInitialized = true;
+          this.subscribeToFirebase();
+          console.log("Firebase synced successfully");
+        } catch (e) {
+          console.error("Firebase init failed", e);
+        }
+      } else {
+        console.warn("Firebase SDK not loaded yet. Make sure internet is connected.");
+      }
+    } else {
+      // Disconnect Firebase listeners if active
+      if (this.firebaseUnsubscribe) {
+        this.firebaseUnsubscribe();
+        this.firebaseUnsubscribe = null;
+      }
+      this.firebaseInitialized = false;
+    }
+  }
+
+  // Subscribe to cloud changes
+  subscribeToFirebase() {
+    if (!this.firebaseInitialized) return;
+    try {
+      const db = firebase.firestore();
+      this.firebaseUnsubscribe = db.collection('masjid').doc('config').onSnapshot((doc) => {
+        if (doc.exists) {
+          const cloudData = doc.data();
+          // To prevent infinite loop, compare locally first
+          if (JSON.stringify(cloudData) !== JSON.stringify(this.data)) {
+            console.log("Received data updates from Firebase Cloud");
+            this.saveLocal({ ...this.data, ...cloudData });
+          }
+        } else {
+          // Document doesn't exist, create it in cloud with local data
+          this.syncToFirebase(this.data);
+        }
+      }, (error) => {
+        console.error("Firestore listener error", error);
+      });
+    } catch (e) {
+      console.error("Firebase subscription error", e);
+    }
+  }
+
+  // Upload/Sync data to Firebase
+  syncToFirebase(data) {
+    if (!this.firebaseInitialized) return;
+    try {
+      const db = firebase.firestore();
+      // Remove sensitive/local fields if necessary, or sync everything
+      db.collection('masjid').doc('config').set(data)
+        .then(() => console.log("Cloud database synchronized"))
+        .catch(err => console.error("Cloud database synchronization failed", err));
+    } catch (e) {
+      console.error("Firebase sync error", e);
+    }
+  }
+}
+
+// Bind instance to window
+window.dataStore = new DataStore();

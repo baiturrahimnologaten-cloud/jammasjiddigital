@@ -1,0 +1,621 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --bg-primary: #010a06;
+  --bg-gradient: radial-gradient(circle at center, #05301b 0%, #010c07 100%);
+  --color-primary: #ffffff;
+  --color-secondary: rgba(255, 255, 255, 0.7);
+  --color-muted: rgba(255, 255, 255, 0.4);
+  --accent-gold: #e5c060;
+  --accent-gold-rgb: 229, 192, 96;
+  --accent-green: #24b36d; /* Diubah agar sesuai persis dengan warna hijau logo Baiturrahim */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(16px);
+  --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--color-primary);
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5vh 2.5vw;
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 16px;
+  box-shadow: var(--shadow-main);
+}
+
+/* --- HEADER SECTION --- */
+header {
+  height: 11vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  margin-bottom: 1.5vh;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.masjid-logo {
+  height: 9vh;
+  width: 9vh;
+  object-fit: contain;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+.masjid-info h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-primary);
+  background: linear-gradient(135deg, #ffffff 60%, var(--accent-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.masjid-info p {
+  font-size: 1rem;
+  color: var(--color-secondary);
+  font-weight: 300;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.datetime-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.clock-main {
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  font-feature-settings: "tnum"; /* Tabular numbers */
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+  line-height: 1;
+}
+
+.date-sub {
+  font-size: 1.05rem;
+  color: var(--accent-gold);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-top: 6px;
+}
+
+/* --- MAIN SECTION --- */
+main {
+  height: 74vh;
+  display: grid;
+  grid-template-columns: 70% 26%;
+  gap: 4%;
+  margin-bottom: 1vh;
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%;
+}
+
+.slideshow-area {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+  min-height: 0;
+}
+
+.slide-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  z-index: 1;
+}
+
+.slide-img.active {
+  opacity: 1;
+}
+
+.slideshow-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(1, 10, 6, 0.95) 0%, rgba(1, 10, 6, 0.4) 50%, rgba(1, 10, 6, 0) 100%);
+  z-index: 2;
+}
+
+.slide-caption {
+  position: relative;
+  z-index: 3;
+  padding: 24px;
+  max-width: 90%;
+}
+
+.slide-caption h3 {
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.slide-caption p {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: var(--color-primary);
+  line-height: 1.4;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Info Panel (QRIS & Keuangan) */
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+/* QRIS CARD */
+.qris-card {
+  flex: 1.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  min-height: 0; /* Force flexbox to respect heights */
+}
+
+.qris-standalone-img {
+  height: 92%;
+  max-height: 92%;
+  width: auto;
+  max-width: 90%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  background: white;
+  padding: 8px;
+  transition: transform 0.3s;
+}
+
+/* KAS KEUANGAN CARD */
+.finance-card {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0; /* Force flexbox to respect heights */
+}
+
+.finance-title {
+  font-size: 1rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px dashed var(--glass-border);
+  padding-bottom: 8px;
+}
+
+.finance-main {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.finance-main label {
+  font-size: 0.9rem;
+  color: var(--color-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.finance-main .balance-val {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.finance-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  border-top: 1px dashed var(--glass-border);
+  padding-top: 10px;
+}
+
+.finance-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+}
+
+.finance-item label {
+  color: var(--color-muted);
+  margin-bottom: 2px;
+}
+
+.finance-item span {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.finance-item.income span {
+  color: var(--accent-green);
+}
+
+.finance-item.expense span {
+  color: #e74c3c;
+}
+
+.prayer-times-bar {
+  height: 15vh;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.prayer-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.prayer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  transition: background 0.3s;
+}
+
+.prayer-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.prayer-time {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-feature-settings: "tnum";
+}
+
+.prayer-countdown {
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  font-weight: 500;
+  margin-top: 4px;
+  display: none;
+}
+
+/* Active Highlight Card State */
+.prayer-card.active {
+  background: rgba(229, 192, 96, 0.08);
+  border: 1px solid rgba(var(--accent-gold-rgb), 0.5);
+  box-shadow: 0 0 25px rgba(var(--accent-gold-rgb), 0.2);
+}
+
+.prayer-card.active::before {
+  background: var(--accent-gold);
+}
+
+.prayer-card.active .prayer-name {
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.prayer-card.active .prayer-time {
+  text-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.3);
+}
+
+.prayer-card.active .prayer-countdown {
+  display: block;
+  animation: pulse-countdown 1.5s infinite;
+}
+
+@keyframes pulse-countdown {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* --- RUNNING TEXT BANNER --- */
+.running-text-bar {
+  height: 4vh;
+  margin-top: 1vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 0 20px;
+  border-left: 4px solid var(--accent-gold);
+}
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  padding-left: 100%;
+  animation: marquee 50s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* --- INTERACTIVE STATE OVERLAYS (Adzan, Iqomah, Sholat) --- */
+.fullscreen-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #010604;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.fullscreen-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 1. ADZAN OVERLAY */
+.adzan-overlay {
+  background: radial-gradient(circle at center, #063a22 0%, #000805 100%);
+}
+
+.adzan-title {
+  font-size: 2.8rem;
+  color: var(--accent-gold);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+.adzan-sholat-name {
+  font-size: 7rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+  margin-bottom: 10px;
+}
+
+.adzan-desc {
+  font-size: 1.8rem;
+  color: var(--color-secondary);
+  font-weight: 300;
+  max-width: 80%;
+  line-height: 1.5;
+}
+
+/* 2. IQOMAH OVERLAY */
+.iqomah-overlay {
+  background: radial-gradient(circle at center, #021a10 0%, #000402 100%);
+}
+
+.iqomah-title {
+  font-size: 2.5rem;
+  color: var(--color-secondary);
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.iqomah-sholat-name {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.iqomah-timer {
+  font-size: 14rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  font-feature-settings: "tnum";
+  text-shadow: 0 0 50px rgba(255, 255, 255, 0.15);
+  margin-bottom: 40px;
+  animation: pulse-timer 1s infinite alternate;
+}
+
+.iqomah-advices {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.iqomah-advice-item {
+  font-size: 2rem;
+  color: #2ecc71;
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+}
+
+.iqomah-advice-item.danger {
+  color: #e74c3c;
+  animation: blink-fast 1s infinite;
+}
+
+/* 3. SHOLAT OVERLAY (Layar Redup) */
+.sholat-overlay {
+  background: #000000;
+}
+
+.sholat-icon {
+  font-size: 6rem;
+  color: var(--accent-gold);
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.sholat-message {
+  font-size: 3rem;
+  font-weight: 600;
+  color: #ffffff;
+  opacity: 0.35;
+  letter-spacing: 1px;
+  animation: slow-glow 2s infinite alternate;
+}
+
+.sholat-submessage {
+  font-size: 1.5rem;
+  color: var(--color-secondary);
+  margin-top: 15px;
+  opacity: 0.25;
+}
+
+/* Keyframe Animations */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-timer {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+@keyframes blink-fast {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes slow-glow {
+  0% { opacity: 0.2; text-shadow: 0 0 10px rgba(255, 255, 255, 0); }
+  100% { opacity: 0.45; text-shadow: 0 0 20px rgba(255, 255, 255, 0.4); }
+}
+
+/* Scale adjustments for smaller monitor aspect ratios */
+@media (max-height: 700px) {
+  .clock-main { font-size: 2.6rem; }
+  .masjid-info h1 { font-size: 1.8rem; }
+  .qris-standalone-img { max-height: 80%; }
+  .finance-main .balance-val { font-size: 1.8rem; }
+  .prayer-time { font-size: 1.8rem; }
+}
+
+/* --- FLOATING FULLSCREEN TOGGLE BUTTON --- */
+.fullscreen-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.fullscreen-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.fullscreen-btn svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 2.5;
+}

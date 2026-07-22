@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin - Masjid Baiturrahim Nologaten</title>
+  <link rel="stylesheet" href="css/admin.css">
+
+  <!-- Firebase SDK (v8 Compact for easy CDN loading in plain script files) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+  <div class="admin-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside>
+      <div>
+        <div class="brand-section">
+          <img src="assets/logo.png" alt="Logo Masjid" class="brand-logo" id="sidebar-logo">
+          <div class="brand-name">
+            <h2>Baiturrahim</h2>
+            <span>Admin Dashboard</span>
+          </div>
+        </div>
+        
+        <ul class="nav-links">
+          <li>
+            <a class="nav-item active" data-tab="tab-general">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              Profil & Lokasi
+            </a>
+          </li>
+          <li>
+            <a class="nav-item" data-tab="tab-finance">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Keuangan & QRIS
+            </a>
+          </li>
+          <li>
+            <a class="nav-item" data-tab="tab-photos">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              Foto Kegiatan
+            </a>
+          </li>
+          <li>
+            <a class="nav-item" data-tab="tab-prayer">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              Adzan & Iqomah
+            </a>
+          </li>
+          <li>
+            <a class="nav-item" data-tab="tab-marquee">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+              Pengumuman
+            </a>
+          </li>
+          <li>
+            <a class="nav-item" data-tab="tab-firebase">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+              Firebase Cloud Sync
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="btn btn-danger" id="btn-logout" style="width: 100%; padding: 8px 12px; font-size: 0.85rem; margin-bottom: 12px;">Keluar Panel</button>
+        <p>&copy; 2026 Masjid Baiturrahim</p>
+        <p>Real-Time Digital System</p>
+      </div>
+    </aside>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main>
+      <!-- Content Header -->
+      <header class="content-header">
+        <div>
+          <h1 id="tab-title">Profil & Lokasi Masjid</h1>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Kelola konfigurasi jam masjid digital secara real-time.</p>
+        </div>
+        <div class="header-actions">
+          <span id="save-indicator">Perubahan disimpan secara lokal!</span>
+          <button class="theme-toggle-btn" id="btn-theme-toggle" title="Toggle Tema Gelap/Terang">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" id="theme-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+          </button>
+          <button class="btn btn-primary" id="btn-save-global">Simpan Perubahan</button>
+        </div>
+      </header>
+
+      <!-- ================= TAB CONTENTS ================= -->
+
+      <!-- 1. GENERAL TAB -->
+      <section class="tab-content active" id="tab-general">
+        <div class="dashboard-grid">
+          <!-- Profil Card -->
+          <div class="card">
+            <div class="card-title">Profil Masjid</div>
+            <div class="form-group">
+              <label for="txt-mosque-name">Nama Masjid</label>
+              <input type="text" id="txt-mosque-name" placeholder="Masjid Baiturrahim">
+            </div>
+            <div class="form-group">
+              <label for="txt-mosque-address">Alamat Lengkap</label>
+              <textarea id="txt-mosque-address" rows="3" placeholder="Alamat lengkap masjid..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="txt-admin-password">Kata Sandi Dashboard Admin</label>
+              <input type="password" id="txt-admin-password" placeholder="Ubah kata sandi login...">
+            </div>
+            <div class="form-group">
+              <label for="val-hijri-offset">Koreksi Kalender Hijriah</label>
+              <div class="slider-container">
+                <input type="range" id="val-hijri-offset" min="-3" max="3" step="1" value="0">
+                <span class="slider-value" id="val-hijri-offset-label">0 Hari</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -4px;">Sesuaikan jika penanggalan Hijriah selisih ± hari dari pengumuman lokal.</p>
+            </div>
+          </div>
+
+          <!-- Geolocation Card -->
+          <div class="card">
+            <div class="card-title">Koordinat Geografis (Waktu Sholat)</div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="num-latitude">Latitude (Lintang)</label>
+                <input type="number" id="num-latitude" step="0.000001" placeholder="-7.7828">
+              </div>
+              <div class="form-group">
+                <label for="num-longitude">Longitude (Bujur)</label>
+                <input type="number" id="num-longitude" step="0.000001" placeholder="110.4011">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="sel-timezone">Zona Waktu</label>
+                <select id="sel-timezone">
+                  <option value="7">WIB (UTC+7)</option>
+                  <option value="8">WITA (UTC+8)</option>
+                  <option value="9">WIT (UTC+9)</option>
+                </select>
+              </div>
+              <div class="form-group" style="justify-content: flex-end;">
+                <button class="btn btn-secondary" id="btn-detect-gps" style="width: 100%;">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-right: 4px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  Deteksi Lokasi GPS
+                </button>
+              </div>
+            </div>
+            
+            <div class="form-group" style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+              <label>Logo Masjid</label>
+              <div class="asset-upload-card">
+                <img src="assets/logo.png" alt="Preview Logo" class="asset-preview" id="img-logo-preview">
+                <div>
+                  <input type="file" id="file-logo" accept="image/*" style="display: none;">
+                  <button class="btn btn-secondary" onclick="document.getElementById('file-logo').click()">Pilih Foto Logo</button>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Direkomendasikan foto PNG transparan dengan rasio 1:1.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. FINANCE TAB -->
+      <section class="tab-content" id="tab-finance">
+        <div class="dashboard-grid">
+          <!-- Kas Masjid Card -->
+          <div class="card">
+            <div class="card-title">Laporan Kas Keuangan</div>
+            <div class="form-group">
+              <label for="num-balance">Total Saldo Kas Masjid</label>
+              <div class="input-suffix">
+                <input type="number" id="num-balance" placeholder="12500000">
+                <span>Rupiah</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="num-income">Pemasukan Mingguan</label>
+              <div class="input-suffix">
+                <input type="number" id="num-income" placeholder="1850000">
+                <span>Rupiah</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="num-expense">Pengeluaran Mingguan</label>
+              <div class="input-suffix">
+                <input type="number" id="num-expense" placeholder="450000">
+                <span>Rupiah</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- QRIS Masjid Card -->
+          <div class="card">
+            <div class="card-title">QRIS Donasi Masjid</div>
+            <div class="form-group">
+              <label>Gambar Barcode QRIS</label>
+              <div class="asset-upload-card" style="align-items: flex-start;">
+                <img src="assets/qris.png" alt="Preview QRIS" class="asset-preview" id="img-qris-preview" style="width: 150px; height: 150px;">
+                <div>
+                  <input type="file" id="file-qris" accept="image/*" style="display: none;">
+                  <button class="btn btn-secondary" onclick="document.getElementById('file-qris').click()">Ganti Foto QRIS</button>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 6px;">Unggah barcode QRIS masjid Anda. Usahakan gambar bersih beresolusi tinggi agar mudah discan jamaah dari kejauhan.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. PHOTOS TAB -->
+      <section class="tab-content" id="tab-photos">
+        <div class="card">
+          <div class="card-title">Unggah Foto Kegiatan Masjid</div>
+          
+          <div class="form-row" style="align-items: flex-end; grid-template-columns: 2.5fr 1fr;">
+            <div class="form-group">
+              <label for="txt-photo-caption">Deskripsi / Keterangan Foto Kegiatan</label>
+              <input type="text" id="txt-photo-caption" placeholder="Tulis caption kegiatan di sini (misal: Gotong Royong Kebersihan...)">
+            </div>
+            <div class="form-group">
+              <input type="file" id="file-activity" accept="image/*" style="display: none;">
+              <button class="btn btn-primary" onclick="document.getElementById('file-activity').click()" style="width: 100%;">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pilih & Unggah Foto
+              </button>
+            </div>
+          </div>
+          
+          <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 10px;">
+            <label style="margin-bottom: 12px; display: block;">Foto Kegiatan Aktif (Slideshow)</label>
+            <div class="image-preview-grid" id="container-photo-grid">
+              <!-- Grid items will be populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. PRAYER PARAMS TAB -->
+      <section class="tab-content" id="tab-prayer">
+        <div class="dashboard-grid">
+          <!-- Iqomah and Screen Durations -->
+          <div class="card">
+            <div class="card-title">Durasi Jeda Iqomah (Menit)</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 10px;">Atur lama waktu hitung mundur iqomah setelah kumandang adzan selesai.</p>
+            <div class="form-group">
+              <label for="val-iqomah-subuh">Subuh</label>
+              <div class="slider-container">
+                <input type="range" id="val-iqomah-subuh" min="0" max="20" step="1">
+                <span class="slider-value" id="val-iqomah-subuh-label">10 Menit</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="val-iqomah-dzuhur">Dzuhur</label>
+              <div class="slider-container">
+                <input type="range" id="val-iqomah-dzuhur" min="0" max="20" step="1">
+                <span class="slider-value" id="val-iqomah-dzuhur-label">5 Menit</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="val-iqomah-ashar">Ashar</label>
+              <div class="slider-container">
+                <input type="range" id="val-iqomah-ashar" min="0" max="20" step="1">
+                <span class="slider-value" id="val-iqomah-ashar-label">5 Menit</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="val-iqomah-maghrib">Maghrib</label>
+              <div class="slider-container">
+                <input type="range" id="val-iqomah-maghrib" min="0" max="20" step="1">
+                <span class="slider-value" id="val-iqomah-maghrib-label">5 Menit</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="val-iqomah-isya">Isya</label>
+              <div class="slider-container">
+                <input type="range" id="val-iqomah-isya" min="0" max="20" step="1">
+                <span class="slider-value" id="val-iqomah-isya-label">7 Menit</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alarm & Blank Screen Configs -->
+          <div class="card" style="justify-content: flex-start; gap: 24px;">
+            <div>
+              <div class="card-title">Durasi Mode Monitor</div>
+              <div class="form-group" style="margin-top: 15px;">
+                <label for="val-duration-adzan">Durasi Layar Adzan</label>
+                <div class="slider-container">
+                  <input type="range" id="val-duration-adzan" min="1" max="10" step="1">
+                  <span class="slider-value" id="val-duration-adzan-label">3 Menit</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -4px;">Lama tayangan alarm/pemberitahuan adzan sebelum countdown iqomah dimulai.</p>
+              </div>
+              <div class="form-group" style="margin-top: 20px;">
+                <label for="val-duration-sholat">Durasi Layar Redup (Masa Sholat)</label>
+                <div class="slider-container">
+                  <input type="range" id="val-duration-sholat" min="5" max="30" step="1">
+                  <span class="slider-value" id="val-duration-sholat-label">15 Menit</span>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -4px;">Lama layar padam/redup saat ibadah sholat sedang berlangsung agar tidak merusak khusyuk jamaah.</p>
+              </div>
+              <div class="form-group" style="margin-top: 20px;">
+                <label for="val-adzan-tone">Nada Alarm Masuk Adzan (Berbunyi 5x)</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 6px;">
+                  <select id="val-adzan-tone" style="flex-grow: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-color); font-family: inherit;">
+                    <option value="adzan_long">Bip Panjang 1 Detik (Rekomendasi)</option>
+                    <option value="adzan_long_15">Bip Panjang 1.5 Detik</option>
+                    <option value="adzan_long_20">Bip Panjang 2 Detik</option>
+                    <option value="standard">Bip Standar (Beep 550ms)</option>
+                    <option value="bell">Genta Lembut (Ding Resonan)</option>
+                    <option value="chime">Ding-Dong (Nada Ganda)</option>
+                    <option value="double_beep">Bip Ganda Cepat</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary" id="btn-test-adzan" style="white-space: nowrap; padding: 8px 16px;">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 4px; vertical-align: middle;"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                    Coba Nada
+                  </button>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Pilih nada alarm yang berbunyi 5x saat jam memasuki waktu adzan sholat.</p>
+              </div>
+
+              <div class="form-group" style="margin-top: 20px;">
+                <label for="val-iqomah-tone">Nada Alarm Iqomah Selesai (Berbunyi 3x)</label>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 6px;">
+                  <select id="val-iqomah-tone" style="flex-grow: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-color); font-family: inherit;">
+                    <option value="double_beep">Bip Ganda Cepat (Rekomendasi)</option>
+                    <option value="standard">Bip Standar (Beep 550ms)</option>
+                    <option value="adzan_long">Bip Panjang 1 Detik</option>
+                    <option value="adzan_long_15">Bip Panjang 1.5 Detik</option>
+                    <option value="adzan_long_20">Bip Panjang 2 Detik</option>
+                    <option value="bell">Genta Lembut (Ding Resonan)</option>
+                    <option value="chime">Ding-Dong (Nada Ganda)</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary" id="btn-test-iqomah" style="white-space: nowrap; padding: 8px 16px;">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 4px; vertical-align: middle;"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+                    Coba Nada
+                  </button>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Pilih nada alarm yang berbunyi 3x saat hitung mundur iqomah habis dan sholat dimulai.</p>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+              <div class="card-title" style="border: none; padding: 0; margin-bottom: 12px;">Koreksi Jadwal Waktu Sholat (Menit)</div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">Sesuaikan menit waktu sholat agar sinkron dengan jadwal Kemenag daerah setempat.</p>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="num-offset-subuh">Subuh</label>
+                  <input type="number" id="num-offset-subuh" value="0">
+                </div>
+                <div class="form-group">
+                  <label for="num-offset-syuruq">Syuruq</label>
+                  <input type="number" id="num-offset-syuruq" value="0">
+                </div>
+              </div>
+              <div class="form-row" style="margin-top: 10px;">
+                <div class="form-group">
+                  <label for="num-offset-dzuhur">Dzuhur</label>
+                  <input type="number" id="num-offset-dzuhur" value="0">
+                </div>
+                <div class="form-group">
+                  <label for="num-offset-ashar">Ashar</label>
+                  <input type="number" id="num-offset-ashar" value="0">
+                </div>
+              </div>
+              <div class="form-row" style="margin-top: 10px;">
+                <div class="form-group">
+                  <label for="num-offset-maghrib">Maghrib</label>
+                  <input type="number" id="num-offset-maghrib" value="0">
+                </div>
+                <div class="form-group">
+                  <label for="num-offset-isya">Isya</label>
+                  <input type="number" id="num-offset-isya" value="0">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. MARQUEE ANNOUNCEMENT TAB -->
+      <section class="tab-content" id="tab-marquee">
+        <div class="card">
+          <div class="card-title">Teks Berjalan (Running Text)</div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">Teks pengumuman yang akan bergantian bergulir di bagian bawah layar monitor TV masjid.</p>
+          
+          <div class="running-text-list" id="container-marquee-list">
+            <!-- Items loaded dynamically -->
+          </div>
+
+          <div class="add-text-form" style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 15px;">
+            <input type="text" id="txt-new-marquee" placeholder="Tulis kalimat pengumuman baru di sini...">
+            <button class="btn btn-primary" id="btn-add-marquee">Tambah Teks</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. FIREBASE CLOUD SYNC TAB -->
+      <section class="tab-content" id="tab-firebase">
+        <div class="card">
+          <div class="card-title">Kontrol Jarak Jauh Nirkabel (Firebase Cloud Sync)</div>
+          
+          <div class="firebase-toggle">
+            <div>
+              <h4 style="font-size: 1.05rem; font-weight: 600;">Aktifkan Sinkronisasi Awan (Firebase)</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">Hubungkan ke cloud untuk mengubah data dari HP/Laptop secara jarak jauh lewat internet.</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="chk-firebase-enable">
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <div id="firebase-config-fields" style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="txt-fb-apikey">API Key</label>
+                <input type="text" id="txt-fb-apikey" placeholder="AIzaSyA1...">
+              </div>
+              <div class="form-group">
+                <label for="txt-fb-authdomain">Auth Domain</label>
+                <input type="text" id="txt-fb-authdomain" placeholder="project-id.firebaseapp.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="txt-fb-projectid">Project ID</label>
+                <input type="text" id="txt-fb-projectid" placeholder="project-id">
+              </div>
+              <div class="form-group">
+                <label for="txt-fb-storagebucket">Storage Bucket</label>
+                <input type="text" id="txt-fb-storagebucket" placeholder="project-id.appspot.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="txt-fb-senderid">Messaging Sender ID</label>
+                <input type="text" id="txt-fb-senderid" placeholder="123456789012">
+              </div>
+              <div class="form-group">
+                <label for="txt-fb-appid">App ID</label>
+                <input type="text" id="txt-fb-appid" placeholder="1:123456789012:web:abc123xyz">
+              </div>
+            </div>
+          </div>
+
+          <div style="background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; font-size: 0.85rem; line-height: 1.6; margin-top: 10px;">
+            <h5 style="font-weight: 600; margin-bottom: 6px; color: var(--text-main);">Cara Menghubungkan Jarak Jauh (Nirkabel):</h5>
+            <ol style="padding-left: 20px; color: var(--text-muted);">
+              <li>Buat proyek Firebase gratis di console.firebase.google.com.</li>
+              <li>Tambahkan aplikasi berbasis Web, lalu salin objek Konfigurasi Firebase (Firebase SDK Config).</li>
+              <li>Tempelkan nilai konfigurasi tersebut ke kolom input di atas, lalu centang sakelar "Aktifkan Sinkronisasi Awan".</li>
+              <li>Di konsol Firebase, aktifkan layanan <strong>Cloud Firestore</strong> di bagian database, dan setel aturan keamanan (Security Rules) menjadi mode baca & tulis (read/write).</li>
+              <li>Klik tombol "Simpan Perubahan". Aplikasi TV Masjid dan Dashboard di HP Anda sekarang terhubung secara real-time nirkabel!</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Login Screen Overlay -->
+  <div class="login-overlay" id="overlay-login">
+    <div class="login-card">
+      <img src="assets/logo.png" alt="Logo Masjid" class="login-logo" id="login-logo-img">
+      <div class="login-title">
+        <h3>Masjid Baiturrahim Nologaten</h3>
+        <p>Panel Keamanan Dashboard Administrator</p>
+      </div>
+      <div class="form-group" style="text-align: left;">
+        <label for="txt-login-password">Kata Sandi Keamanan</label>
+        <input type="password" id="txt-login-password" placeholder="Masukkan kata sandi...">
+      </div>
+      <div class="login-error" id="lbl-login-error">Kata sandi salah! Silakan coba lagi.</div>
+      <button class="btn btn-primary" id="btn-submit-login" style="width: 100%;">Masuk Panel</button>
+    </div>
+  </div>
+
+  <!-- APPLICATION SCRIPTS -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data-store.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jam Digital Masjid - Masjid Baiturrahim Nologaten</title>
+  <link rel="stylesheet" href="css/display.css">
+  
+  <!-- Firebase SDK (v8 Compact for easy CDN loading in plain script files) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+
+  <!-- HEADER SECTION -->
+  <header class="glass-card" id="display-header">
+    <div class="header-left">
+      <img src="assets/logo.png" alt="Logo Masjid" class="masjid-logo" id="masjid-logo-img">
+      <div class="masjid-info">
+        <h1 id="lbl-mosque-name">Masjid Baiturrahim Nologaten</h1>
+        <p id="lbl-mosque-address">Jl. Nologaten, Caturtunggal, Depok, Sleman, D.I. Yogyakarta</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="datetime-container">
+        <div class="clock-main" id="txt-clock">00:00:00</div>
+        <div class="date-sub" id="txt-date-sub">Rabu, 22 Juli 2026  •  7 Safar 1448 H</div>
+      </div>
+      <!-- Floating Fullscreen Button -->
+      <button id="btn-fullscreen" class="fullscreen-btn" title="Layar Penuh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN DISPLAY (SLIDESHOW & QRIS/FINANCE PANEL) -->
+  <main>
+    <!-- Left Column: Slideshow & Prayer Times -->
+    <div class="left-column">
+      <!-- Left: Activity Slideshow -->
+      <section class="slideshow-area glass-card" id="sec-slideshow">
+        <div id="slideshow-images-container">
+          <!-- Images will be inserted here dynamically -->
+        </div>
+        <div class="slideshow-overlay"></div>
+        <div class="slide-caption">
+          <h3 id="slide-title">DOKUMENTASI KEGIATAN</h3>
+          <p id="slide-desc">Mengunggah dokumentasi kegiatan Masjid Baiturrahim Nologaten.</p>
+        </div>
+      </section>
+
+      <!-- Prayer Times Grid (Shifted to Left under Slideshow) -->
+      <section class="prayer-times-bar">
+        <div class="prayer-card glass-card" id="p-subuh" data-prayer="subuh">
+          <div class="prayer-name">Subuh</div>
+          <div class="prayer-time" id="time-subuh">04:30</div>
+          <div class="prayer-countdown" id="cd-subuh">--:--</div>
+        </div>
+        <div class="prayer-card glass-card" id="p-syuruq" data-prayer="syuruq">
+          <div class="prayer-name">Syuruq</div>
+          <div class="prayer-time" id="time-syuruq">05:48</div>
+          <div class="prayer-countdown" id="cd-syuruq">--:--</div>
+        </div>
+        <div class="prayer-card glass-card" id="p-dzuhur" data-prayer="dzuhur">
+          <div class="prayer-name">Dzuhur</div>
+          <div class="prayer-time" id="time-dzuhur">11:45</div>
+          <div class="prayer-countdown" id="cd-dzuhur">--:--</div>
+        </div>
+        <div class="prayer-card glass-card" id="p-ashar" data-prayer="ashar">
+          <div class="prayer-name">Ashar</div>
+          <div class="prayer-time" id="time-ashar">15:05</div>
+          <div class="prayer-countdown" id="cd-ashar">--:--</div>
+        </div>
+        <div class="prayer-card glass-card" id="p-maghrib" data-prayer="maghrib">
+          <div class="prayer-name">Maghrib</div>
+          <div class="prayer-time" id="time-maghrib">17:38</div>
+          <div class="prayer-countdown" id="cd-maghrib">--:--</div>
+        </div>
+        <div class="prayer-card glass-card" id="p-isya" data-prayer="isya">
+          <div class="prayer-name">Isya</div>
+          <div class="prayer-time" id="time-isya">18:52</div>
+          <div class="prayer-countdown" id="cd-isya">--:--</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Right Column: QRIS & Finance Info -->
+    <div class="right-column">
+      <!-- QRIS Card (Only Image, Large & Centered) -->
+      <div class="qris-card glass-card" id="card-qris">
+        <img src="assets/qris.png" alt="QRIS Infaq Masjid" id="qris-code-img" class="qris-standalone-img">
+      </div>
+
+      <!-- Finance Card -->
+      <div class="finance-card glass-card" id="card-finance">
+        <div class="finance-title">Laporan Kas Keuangan</div>
+        <div class="finance-main">
+          <label>Saldo Kas Masjid</label>
+          <div class="balance-val" id="lbl-balance">Rp 12.500.000</div>
+        </div>
+        <div class="finance-details">
+          <div class="finance-item income">
+            <label>Pemasukan Mingguan</label>
+            <span id="lbl-income">Rp 1.850.000</span>
+          </div>
+          <div class="finance-item expense">
+            <label>Pengeluaran Mingguan</label>
+            <span id="lbl-expense">Rp 450.000</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- RUNNING TEXT MARQUEE -->
+  <footer class="running-text-bar glass-card" id="display-footer">
+    <div class="marquee-container">
+      <div class="marquee-content" id="txt-marquee">
+        <!-- Announcements will roll here -->
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= OVERLAYS (REAL-TIME STATE INTERACTION) ================= -->
+
+  <!-- 1. Adzan Overlay -->
+  <div class="fullscreen-overlay adzan-overlay" id="overlay-adzan">
+    <div class="adzan-title">Kumandang Adzan</div>
+    <div class="adzan-sholat-name" id="adzan-sholat-title">MAGHRIB</div>
+    <div class="adzan-desc">Telah memasuki waktu sholat untuk wilayah Sleman DIY dan sekitarnya.</div>
+  </div>
+
+  <!-- 2. Iqomah Countdown Overlay -->
+  <div class="fullscreen-overlay iqomah-overlay" id="overlay-iqomah">
+    <div class="iqomah-title">HITUNG MUNDUR IQOMAH</div>
+    <div class="iqomah-sholat-name" id="iqomah-sholat-title">MAGHRIB</div>
+    <div class="iqomah-timer" id="iqomah-countdown-timer">05:00</div>
+    <div class="iqomah-advices">
+      <div class="iqomah-advice-item">Luruskan dan rapatkan shaf sholat demi kesempurnaan sholat berjamaah.</div>
+      <div class="iqomah-advice-item danger">Mohon nonaktifkan atau senyapkan telepon genggam (HP) Anda!</div>
+    </div>
+  </div>
+
+  <!-- 3. Sholat Mode (Layar Redup/Blank) -->
+  <div class="fullscreen-overlay sholat-overlay" id="overlay-sholat">
+    <div class="sholat-icon">🕌</div>
+    <div class="sholat-message">WAKTU SHOLAT SEDANG BERLANGSUNG</div>
+    <div class="sholat-submessage">Harap tenang dan matikan segala alat komunikasi.</div>
+  </div>
+
+  <!-- APPLICATION CODE INJECTIONS -->
+  <script src="js/prayer-calculator.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data-store.js"></script>
+  <script src="js/display.js"></script>
+</body>
+</html>
