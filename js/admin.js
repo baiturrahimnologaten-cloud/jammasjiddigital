@@ -6,6 +6,7 @@
 // Local copy of configurations to edit
 let localData = null;
 let currentTheme = 'light';
+let pendingDeleteTxId = null; // Tracks transaction ID pending deletion confirm
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Fetch current data
@@ -142,6 +143,38 @@ function initDashboard() {
       // Save and re-render
       saveAllChanges();
       renderFinanceLedger();
+    });
+  }
+
+  // Register Custom Confirm Modal Cancel Event
+  const btnConfirmCancel = document.getElementById("btn-confirm-cancel");
+  const confirmModal = document.getElementById("confirm-modal");
+  if (btnConfirmCancel && confirmModal) {
+    const hideModal = () => {
+      confirmModal.classList.remove("show");
+      pendingDeleteTxId = null;
+    };
+    btnConfirmCancel.addEventListener("click", hideModal);
+    
+    // Hide when clicking translucent background
+    confirmModal.addEventListener("click", (e) => {
+      if (e.target === confirmModal) {
+        hideModal();
+      }
+    });
+  }
+
+  // Register Custom Confirm Modal Delete Confirm Event
+  const btnConfirmDelete = document.getElementById("btn-confirm-delete");
+  if (btnConfirmDelete && confirmModal) {
+    btnConfirmDelete.addEventListener("click", () => {
+      if (pendingDeleteTxId) {
+        localData.infaqTransactions = localData.infaqTransactions.filter(t => t.id !== pendingDeleteTxId);
+        saveAllChanges();
+        renderFinanceLedger();
+      }
+      confirmModal.classList.remove("show");
+      pendingDeleteTxId = null;
     });
   }
 }
@@ -875,16 +908,14 @@ function renderFinanceLedger() {
     `;
   }).join("");
   
-  // Bind delete event listeners
+  // Bind delete event listeners (uses custom confirm modal instead of browser's raw confirm box)
   const deleteBtns = tbody.querySelectorAll(".btn-delete-tx");
   deleteBtns.forEach(btn => {
     btn.addEventListener("click", (e) => {
       const txId = btn.getAttribute("data-id");
-      if (confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
-        localData.infaqTransactions = localData.infaqTransactions.filter(t => t.id !== txId);
-        saveAllChanges();
-        renderFinanceLedger();
-      }
+      pendingDeleteTxId = txId;
+      const modal = document.getElementById("confirm-modal");
+      if (modal) modal.classList.add("show");
     });
   });
 }
