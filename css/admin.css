@@ -672,12 +672,13 @@ input:checked + .slider-switch:before {
   aside {
     position: fixed;
     top: 0;
-    left: -280px;
+    right: -280px;
+    left: auto;
     width: 280px !important;
     height: 100vh;
     z-index: 1000;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 25px rgba(0, 0, 0, 0.2);
     background-color: var(--primary-color);
     padding: 30px 20px;
     display: flex !important;
@@ -686,7 +687,8 @@ input:checked + .slider-switch:before {
   }
 
   aside.show {
-    left: 0;
+    right: 0;
+    left: auto;
   }
 
   .brand-section {
