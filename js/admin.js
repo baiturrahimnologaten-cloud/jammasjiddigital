@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4. Initialize password visibility eye toggles
   initPasswordToggles();
 
-  // 5. Register DataStore listener for real-time password change detection (security logout)
+  // 5. Register DataStore listener for real-time password change detection & stats update
   window.dataStore.addListener((newData) => {
     const isLogged = sessionStorage.getItem("admin_logged_in") === "true";
     if (isLogged) {
@@ -29,6 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
         sessionStorage.removeItem("admin_logged_in");
         alert("Sandi admin telah diubah dari perangkat lain. Sesi Anda berakhir demi keamanan.");
         window.location.reload();
+        return;
+      }
+      // Update localData reference and refresh home tab stats
+      localData = JSON.parse(JSON.stringify(newData));
+      if (typeof updateHomeDashboardStats === "function") {
+        updateHomeDashboardStats();
       }
     }
   });
@@ -112,6 +118,7 @@ function initDashboard() {
   initLocationDetector();
   initFinanceEvents();
   initMobileNavigation();
+  initHomeDashboard();
 
   // Register Global Save Event
   document.getElementById("btn-save-global").addEventListener("click", saveAllChanges);
@@ -252,10 +259,24 @@ function initDashboard() {
 /**
  * Tab Navigation Controller
  */
+const TAB_SUBTITLES = {
+  'tab-home': 'Ringkasan informasi jam masjid dan akses cepat menu pengaturan.',
+  'tab-general': 'Kelola nama masjid, alamat lengkap, dan koordinat GPS lokasi.',
+  'tab-finance': 'Kelola pemasukan, pengeluaran kas, serta barcode QRIS donasi.',
+  'tab-photos': 'Kelola foto dokumentasi kegiatan untuk tayangan slideshow.',
+  'tab-prayer': 'Atur waktu iqomah, penyesuaian Hijriah, dan jadwal sholat.',
+  'tab-marquee': 'Tulis pesan teks berjalan di bagian bawah monitor display.',
+  'tab-firebase': 'Konfigurasi API key dan status sinkronisasi database cloud.'
+};
+
+/**
+ * Tab Navigation Controller
+ */
 function initTabNavigation() {
   const navItems = document.querySelectorAll(".nav-item");
   const tabContents = document.querySelectorAll(".tab-content");
   const tabTitle = document.getElementById("tab-title");
+  const tabDesc = document.querySelector(".content-header p");
 
   navItems.forEach(item => {
     item.addEventListener("click", (e) => {
@@ -271,10 +292,115 @@ function initTabNavigation() {
       item.classList.add("active");
       document.getElementById(targetTab).classList.add("show", "active");
 
-      // Update heading text
+      // Update heading text & dynamic description
       tabTitle.innerText = item.innerText.trim();
+      if (tabDesc && TAB_SUBTITLES[targetTab]) {
+        tabDesc.innerText = TAB_SUBTITLES[targetTab];
+      }
     });
   });
+}
+
+/**
+ * Initialize the Home dashboard page elements and links
+ */
+function initHomeDashboard() {
+  // Bind shortcut navigation card events
+  document.querySelectorAll(".shortcut-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const targetTab = card.getAttribute("data-target-tab");
+      const navLink = document.querySelector(`.nav-item[data-tab="${targetTab}"]`);
+      if (navLink) {
+        navLink.click(); // Programmatic tab switch!
+      }
+    });
+  });
+
+  // Set default initial header titles to Beranda
+  const tabTitle = document.getElementById("tab-title");
+  if (tabTitle) tabTitle.innerText = "Beranda";
+  const tabDesc = document.querySelector(".content-header p");
+  if (tabDesc) tabDesc.innerText = TAB_SUBTITLES['tab-home'];
+
+  // Update dynamic numbers
+  updateHomeDashboardStats();
+}
+
+/**
+ * Recalculate and update the Overview Stats and Prayer Times widget on the Home Tab
+ */
+function updateHomeDashboardStats() {
+  if (!localData) return;
+
+  // 1. Dynamic Welcome Text
+  const welcomeTitle = document.getElementById("home-welcome-title");
+  if (welcomeTitle) {
+    welcomeTitle.innerText = `Selamat Datang di Panel Admin ${localData.mosqueName || 'Baiturrahim'}`;
+  }
+  const welcomeSubtitle = document.getElementById("home-welcome-subtitle");
+  if (welcomeSubtitle) {
+    welcomeSubtitle.innerText = `Kelola informasi ${localData.mosqueName || 'masjid'}, keuangan, pengumuman, dan jadwal sholat secara instan.`;
+  }
+
+  // 2. Saldo Kas Masjid calculation
+  const totalBalance = (localData.infaqTransactions || []).reduce((acc, curr) => {
+    return curr.type === 'income' ? acc + curr.amount : acc - curr.amount;
+  }, 0);
+  const formattedBalance = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalBalance);
+  
+  const balanceEl = document.getElementById("stat-cash-balance");
+  if (balanceEl) {
+    balanceEl.innerText = formattedBalance;
+  }
+
+  // 3. Photo slideshow count
+  const photosCount = Object.keys(localData.photos || {}).length;
+  const photosEl = document.getElementById("stat-photos-count");
+  if (photosEl) {
+    photosEl.innerText = `${photosCount} Foto`;
+  }
+
+  // 4. Active Announcements count
+  const activeAnnouncements = (localData.marqueeTexts || []).length;
+  const announcementsEl = document.getElementById("stat-announcements-count");
+  if (announcementsEl) {
+    announcementsEl.innerText = `${activeAnnouncements} Pesan`;
+  }
+
+  // 5. Update Prayer Times
+  updateHomePrayerTimes();
+}
+
+/**
+ * Calculate and render today's prayer times in the Home dashboard widget
+ */
+function updateHomePrayerTimes() {
+  if (!localData) return;
+  const lat = parseFloat(localData.latitude) || -7.7828;
+  const lng = parseFloat(localData.longitude) || 110.4011;
+  const tz = parseFloat(localData.timezone) || 7;
+  
+  const offsets = {
+    subuh: parseInt(localData.offsets?.subuh) || 0,
+    syuruq: parseInt(localData.offsets?.syuruq) || 0,
+    dzuhur: parseInt(localData.offsets?.dzuhur) || 0,
+    ashar: parseInt(localData.offsets?.ashar) || 0,
+    maghrib: parseInt(localData.offsets?.maghrib) || 0,
+    isya: parseInt(localData.offsets?.isya) || 0
+  };
+  
+  if (typeof PrayerCalculator !== "undefined") {
+    const calc = new PrayerCalculator();
+    const times = calc.calculatePrayerTimes(new Date(), lat, lng, tz, offsets);
+    
+    const prayers = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
+    prayers.forEach(p => {
+      const el = document.querySelector(`#home-prayer-${p} .prayer-time`);
+      if (el && times[p]) {
+        el.innerText = times[p];
+      }
+    });
+  }
 }
 
 /**
@@ -832,6 +958,9 @@ function saveAllChanges() {
       setTimeout(() => {
         if (overlay) overlay.classList.remove("show");
         
+        // Update overview stats
+        updateHomeDashboardStats();
+
         if (localData.firebase && localData.firebase.enabled) {
           showToast("Sinkronisasi Berhasil", "Data berhasil disinkronkan ke Cloud & Lokal!", "success");
         } else {
