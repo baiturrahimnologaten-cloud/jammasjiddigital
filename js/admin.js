@@ -1129,6 +1129,28 @@ function playBuzzerTone(toneType, count = 3) {
         }, delay);
         delay += 500;
       }
+    } else if (toneType === "buzzer_sharp") {
+      // Piercing hardware buzzer (Square wave with 900Hz pitch - highly audible)
+      let delay = 0;
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.type = 'square';
+          osc.frequency.value = 900;
+          
+          gain.gain.setValueAtTime(0, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.65, ctx.currentTime + 0.02); // Sharp & Loud
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6); // 600ms duration
+          
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.6);
+        }, delay);
+        delay += 950;
+      }
     }
   } catch (err) {
     console.warn("Could not play sound: Web Audio API blocked or not supported", err);
