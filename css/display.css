@@ -48,11 +48,12 @@ body {
 
 /* --- HEADER SECTION --- */
 header {
-  height: 11vh;
+  min-height: 12.5vh; /* Increased from 11vh to give the larger clock breathing room */
+  height: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 8px 20px;
   margin-bottom: 1.5vh;
 }
 
@@ -117,7 +118,7 @@ header {
 
 /* --- MAIN SECTION --- */
 main {
-  height: 74vh;
+  height: 72.5vh; /* Reduced from 74vh to balance the header expansion */
   display: grid;
   grid-template-columns: 70% 26%;
   gap: 4%;
@@ -233,7 +234,7 @@ main {
 /* KAS KEUANGAN CARD */
 .finance-card {
   flex: 1;
-  padding: 16px 20px;
+  padding: 12px 18px; /* Slightly reduced padding to prevent bottom details overflow */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -252,7 +253,7 @@ main {
 
 .finance-main {
   text-align: center;
-  padding: 10px 0;
+  padding: 6px 0; /* Reduced from 10px to compress spacing */
 }
 
 .finance-main label {
@@ -263,7 +264,7 @@ main {
 }
 
 .finance-main .balance-val {
-  font-size: 2.9rem; /* Enlarged further from 2.45rem for maximum visibility */
+  font-size: 2.65rem; /* Adjusted from 2.9rem to prevent details crowding the bottom */
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: 0.5px;
@@ -275,7 +276,7 @@ main {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   border-top: 1px dashed var(--glass-border);
-  padding-top: 10px;
+  padding-top: 8px; /* Slightly reduced top spacing */
 }
 
 .finance-item {
