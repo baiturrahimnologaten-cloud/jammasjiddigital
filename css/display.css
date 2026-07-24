@@ -9,9 +9,9 @@
   --accent-gold: #e5c060;
   --accent-gold-rgb: 229, 192, 96;
   --accent-green: #24b36d; /* Diubah agar sesuai persis dengan warna hijau logo Baiturrahim */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --glass-blur: blur(16px);
+  --glass-bg: rgba(2, 22, 12, 0.65); /* Made more opaque for readability without blur */
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-blur: none; /* Disabled for Smart TV performance compatibility */
   --shadow-main: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
@@ -35,12 +35,13 @@ body {
   padding: 1.5vh 2.5vw;
 }
 
-/* Glassmorphism Card Style */
+/* Glassmorphism Card Style - Optimized for low-resource TV screens */
 .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  /* Disabled backdrop-filter to prevent Samsung Smart TV browser lag and flickering */
+  /* backdrop-filter: var(--glass-blur); */
+  /* -webkit-backdrop-filter: var(--glass-blur); */
   border-radius: 16px;
   box-shadow: var(--shadow-main);
 }
@@ -651,9 +652,9 @@ main {
 
 /* --- FINANCIAL TRANSPARENCY OVERLAY --- */
 .recap-overlay {
-  background: rgba(1, 10, 6, 0.85); /* Dark mint glow overlay */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(1, 10, 6, 0.9); /* Dark mint glow overlay (made slightly darker for contrast) */
+  /* backdrop-filter: blur(12px); */
+  /* -webkit-backdrop-filter: blur(12px); */
   display: flex;
   justify-content: center;
   align-items: center;
