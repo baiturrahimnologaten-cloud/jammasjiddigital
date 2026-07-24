@@ -374,6 +374,7 @@ function syncStateWithClock() {
 
   const now = new Date();
   const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+  const isFriday = now.getDay() === 5; // Friday is 5
   
   const prayers = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
   let detectedState = 'NORMAL';
@@ -386,9 +387,10 @@ function syncStateWithClock() {
     
     if (startSec === -1) continue;
 
+    const isFridayDzuhur = (isFriday && p === 'dzuhur');
     const adzanSec = config.adzanDuration * 60;
-    const iqomahSec = (config.iqomah[p] || 0) * 60;
-    const sholatSec = config.sholatDuration * 60;
+    const iqomahSec = isFridayDzuhur ? 0 : (config.iqomah[p] || 0) * 60;
+    const sholatSec = isFridayDzuhur ? 35 * 60 : config.sholatDuration * 60; // 35 minutes of Friday Khutbah + Sholat
 
     const adzanEnd = startSec + adzanSec;
     const iqomahEnd = adzanEnd + iqomahSec;
@@ -400,7 +402,7 @@ function syncStateWithClock() {
       activeP = p;
       remainingSec = adzanEnd - currentSeconds;
       break;
-    } else if (currentSeconds >= adzanEnd && currentSeconds < iqomahEnd) {
+    } else if (iqomahSec > 0 && currentSeconds >= adzanEnd && currentSeconds < iqomahEnd) {
       detectedState = 'IQOMAH';
       activeP = p;
       remainingSec = iqomahEnd - currentSeconds;
@@ -440,12 +442,21 @@ function transitionToState(newState, prayerName, durationSec) {
 
   // Apply new state visual overlays
   if (newState === 'ADZAN') {
-    document.getElementById("adzan-sholat-title").innerText = prayerName.toUpperCase();
+    const isFridayDzuhur = (new Date().getDay() === 5 && prayerName === 'dzuhur');
+    
+    if (isFridayDzuhur) {
+      document.getElementById("adzan-sholat-title").innerText = "JUM'AT";
+    } else {
+      document.getElementById("adzan-sholat-title").innerText = prayerName.toUpperCase();
+    }
+    
     document.getElementById("overlay-adzan").classList.add("show");
     
-    // Buzz adzan alert sound (beep 5x)
+    // Buzz adzan alert sound (beep 5x) - but mute on Friday Dzuhur to avoid clashing with live Adzan
     if (!audioPlayedForCurrentState) {
-      playBuzzer(config.adzanTone || "adzan_long", 5);
+      if (!isFridayDzuhur) {
+        playBuzzer(config.adzanTone || "adzan_long", 5);
+      }
       audioPlayedForCurrentState = true;
     }
   } 
@@ -455,11 +466,23 @@ function transitionToState(newState, prayerName, durationSec) {
     document.getElementById("overlay-iqomah").classList.add("show");
   } 
   else if (newState === 'SHOLAT') {
+    const isFridayDzuhur = (new Date().getDay() === 5 && prayerName === 'dzuhur');
+    
+    if (isFridayDzuhur) {
+      document.querySelector(".sholat-main-advice").innerText = "KHUTBAH & SHOLAT JUM'AT";
+      document.querySelector(".sholat-sub-advice").innerText = "Harap tenang, senyapkan HP, dan dengarkan Khutbah dengan khusyuk.";
+    } else {
+      document.querySelector(".sholat-main-advice").innerText = "SHOLAT BERJAAH SEDANG BERLANGSUNG";
+      document.querySelector(".sholat-sub-advice").innerText = "Luruskan shaf, rapatkan barisan, senyapkan handphone, khusyuklah menghadap Rabb.";
+    }
+    
     document.getElementById("overlay-sholat").classList.add("show");
     
-    // Play sound notification that iqomah has finished / prayer has started (beep 3x)
+    // Play sound notification that iqomah has finished / prayer has started (beep 3x) - mute on Friday Dzuhur
     if (!audioPlayedForCurrentState) {
-      playBuzzer(config.iqomahTone || "double_beep", 3);
+      if (!isFridayDzuhur) {
+        playBuzzer(config.iqomahTone || "double_beep", 3);
+      }
       audioPlayedForCurrentState = true;
     }
   } 
@@ -481,11 +504,15 @@ function tickStateCountdown() {
     if (currentState === 'ADZAN') {
       if (stateCountdownSeconds <= 0) {
         // Go to iqomah if duration is set, otherwise skip to sholat
-        const iqomahDuration = config.iqomah[activePrayer] || 0;
+        const isFriday = new Date().getDay() === 5;
+        const isFridayDzuhur = (isFriday && activePrayer === 'dzuhur');
+        const iqomahDuration = isFridayDzuhur ? 0 : (config.iqomah[activePrayer] || 0);
+        
         if (iqomahDuration > 0) {
           transitionToState('IQOMAH', activePrayer, iqomahDuration * 60);
         } else {
-          transitionToState('SHOLAT', activePrayer, config.sholatDuration * 60);
+          const sholatSecs = isFridayDzuhur ? 35 * 60 : (config.sholatDuration * 60);
+          transitionToState('SHOLAT', activePrayer, sholatSecs);
         }
       }
     } 
