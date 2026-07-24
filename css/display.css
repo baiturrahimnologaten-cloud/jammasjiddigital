@@ -70,7 +70,7 @@ header {
 }
 
 .masjid-info h1 {
-  font-size: 2.2rem;
+  font-size: 2.45rem; /* Enlarged from 2.2rem */
   font-weight: 700;
   letter-spacing: 0.5px;
   color: var(--color-primary);
@@ -80,7 +80,7 @@ header {
 }
 
 .masjid-info p {
-  font-size: 1rem;
+  font-size: 1.15rem; /* Enlarged from 1rem */
   color: var(--color-secondary);
   font-weight: 300;
 }
@@ -99,7 +99,7 @@ header {
 }
 
 .clock-main {
-  font-size: 3.2rem;
+  font-size: 3.9rem; /* Enlarged from 3.2rem */
   font-weight: 800;
   color: var(--color-primary);
   font-feature-settings: "tnum"; /* Tabular numbers */
@@ -108,7 +108,7 @@ header {
 }
 
 .date-sub {
-  font-size: 1.05rem;
+  font-size: 1.25rem; /* Enlarged from 1.05rem */
   color: var(--accent-gold);
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -183,7 +183,7 @@ main {
 }
 
 .slide-caption h3 {
-  font-size: 1.1rem;
+  font-size: 1.2rem; /* Enlarged from 1.1rem */
   color: var(--accent-gold);
   font-weight: 600;
   text-transform: uppercase;
@@ -192,7 +192,7 @@ main {
 }
 
 .slide-caption p {
-  font-size: 1.4rem;
+  font-size: 1.65rem; /* Enlarged from 1.4rem */
   font-weight: 400;
   color: var(--color-primary);
   line-height: 1.4;
@@ -256,14 +256,14 @@ main {
 }
 
 .finance-main label {
-  font-size: 0.9rem;
+  font-size: 1.05rem; /* Enlarged from 0.9rem */
   color: var(--color-secondary);
   display: block;
   margin-bottom: 4px;
 }
 
 .finance-main .balance-val {
-  font-size: 2.2rem;
+  font-size: 2.45rem; /* Enlarged from 2.2rem */
   font-weight: 700;
   color: var(--color-primary);
   letter-spacing: 0.5px;
@@ -335,7 +335,7 @@ main {
 }
 
 .prayer-name {
-  font-size: 1.2rem;
+  font-size: 1.45rem; /* Enlarged from 1.2rem */
   font-weight: 500;
   color: var(--color-secondary);
   text-transform: uppercase;
@@ -344,14 +344,14 @@ main {
 }
 
 .prayer-time {
-  font-size: 2.2rem;
+  font-size: 2.75rem; /* Enlarged from 2.2rem */
   font-weight: 700;
   color: var(--color-primary);
   font-feature-settings: "tnum";
 }
 
 .prayer-countdown {
-  font-size: 0.85rem;
+  font-size: 1.05rem; /* Enlarged from 0.85rem */
   color: var(--accent-gold);
   font-weight: 500;
   margin-top: 4px;
@@ -408,7 +408,7 @@ main {
 
 .marquee-content {
   display: inline-block;
-  font-size: 1.3rem;
+  font-size: 1.55rem; /* Enlarged from 1.3rem */
   font-weight: 500;
   color: var(--color-primary);
   letter-spacing: 0.5px;
