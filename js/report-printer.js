@@ -48,11 +48,14 @@ class ReportPrinter {
       }
     }
     
-    // Default signers if not yet saved
+    // Default signers & custom report options
     return {
       takmir: "H. Ahmad Syafi'i, M.Ag.",
       bendahara: "H. Muhammad Ridwan",
-      city: "Sleman"
+      city: "Sleman",
+      title: "LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID",
+      customNote: "Semoga Allah SWT melimpahkan berkah, pahala berlipat ganda, dan kelapangan rezeki bagi para muhsinin dan jamaah sekalian. Aamiin.",
+      showQris: true
     };
   }
 
@@ -78,11 +81,14 @@ class ReportPrinter {
     // Populate dropdowns
     this.populatePeriodSelects();
     
-    // Populate signer inputs
+    // Populate custom settings inputs
     const signers = this.getSigners();
-    document.getElementById("report-input-takmir").value = signers.takmir || "";
-    document.getElementById("report-input-bendahara").value = signers.bendahara || "";
-    document.getElementById("report-input-city").value = signers.city || "";
+    if (document.getElementById("report-input-takmir")) document.getElementById("report-input-takmir").value = signers.takmir || "";
+    if (document.getElementById("report-input-bendahara")) document.getElementById("report-input-bendahara").value = signers.bendahara || "";
+    if (document.getElementById("report-input-city")) document.getElementById("report-input-city").value = signers.city || "";
+    if (document.getElementById("report-input-title")) document.getElementById("report-input-title").value = signers.title || "LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID";
+    if (document.getElementById("report-input-note")) document.getElementById("report-input-note").value = signers.customNote || "";
+    if (document.getElementById("report-check-qris")) document.getElementById("report-check-qris").checked = signers.showQris !== false;
     
     // Render preview
     this.render();
@@ -350,7 +356,7 @@ class ReportPrinter {
 
       <!-- JUDUL LAPORAN -->
       <div class="report-title-section">
-        <div class="report-main-title">LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID</div>
+        <div class="report-main-title">${signers.title || 'LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID'}</div>
         <div class="report-period-badge">PERIODE BULAN: ${report.monthName.toUpperCase()} ${report.year}</div>
         <div class="report-print-timestamp">Dipublikasikan untuk Papan Pengumuman • Dicetak pada: ${printDateStr}, pukul ${printTimeStr}</div>
       </div>
@@ -405,6 +411,7 @@ class ReportPrinter {
       <!-- BAGIAN BAWAH: QRIS DONASI & PENGESAHAN TANDA TANGAN -->
       <div class="report-footer-section">
         <div class="report-footer-grid">
+          ${signers.showQris !== false ? `
           <!-- Kotak QRIS Jamaah -->
           <div class="report-qris-box">
             <img src="${qrisUrl}" alt="QRIS Infaq" class="report-qris-thumb" onerror="this.src='assets/qris.png'">
@@ -413,6 +420,7 @@ class ReportPrinter {
               Pindai barcode QRIS resmi ${mosqueName} ini menggunakan Mobile Banking atau Dompet Digital Anda untuk berinfaq.
             </div>
           </div>
+          ` : '<div></div>'}
 
           <!-- Tanda Tangan DKM -->
           <div class="report-signature-block">
@@ -437,7 +445,7 @@ class ReportPrinter {
         <!-- DOA & WATERMARK RESMI -->
         <div class="report-bottom-note">
           <div class="report-doa">
-            "Semoga Allah SWT melimpahkan berkah, pahala berlipat ganda, dan kelapangan rezeki bagi para muhsinin dan jamaah sekalian. Aamiin."
+            "${signers.customNote || 'Semoga Allah SWT melimpahkan berkah, pahala berlipat ganda, dan kelapangan rezeki bagi para muhsinin dan jamaah sekalian. Aamiin.'}"
           </div>
           <div>Dokumen Resmi Papan Pengumuman • Sistem Digital Masjid</div>
         </div>
@@ -490,11 +498,12 @@ class ReportPrinter {
               <label for="report-select-year">Tahun:</label>
               <select id="report-select-year" class="report-select"></select>
             </div>
-            <button type="button" class="btn-toggle-sign-settings" id="btn-toggle-signers" title="Atur Nama Penandatangan">
+            <button type="button" class="btn-toggle-sign-settings" id="btn-toggle-signers" title="Kustomisasi Dokumen Cetak">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
               </svg>
-              Nama Pengurus / DKM
+              Kustomisasi Dokumen Cetak
             </button>
           </div>
 
@@ -508,8 +517,12 @@ class ReportPrinter {
           </div>
         </div>
 
-        <!-- Optional Drawer for Signers -->
+        <!-- Optional Drawer for Signers & Customization -->
         <div class="report-signers-panel" id="report-signers-drawer" style="display: none;">
+          <div class="report-control-item" style="flex: 2; min-width: 250px;">
+            <label for="report-input-title">Judul Laporan:</label>
+            <input type="text" id="report-input-title" class="report-input" placeholder="LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID">
+          </div>
           <div class="report-control-item">
             <label for="report-input-takmir">Ketua Takmir / DKM:</label>
             <input type="text" id="report-input-takmir" class="report-input" placeholder="H. Ahmad Syafi'i, M.Ag.">
@@ -519,8 +532,18 @@ class ReportPrinter {
             <input type="text" id="report-input-bendahara" class="report-input" placeholder="H. Muhammad Ridwan">
           </div>
           <div class="report-control-item">
-            <label for="report-input-city">Kota / Domisili:</label>
+            <label for="report-input-city">Kota Domisili:</label>
             <input type="text" id="report-input-city" class="report-input" placeholder="Sleman">
+          </div>
+          <div class="report-control-item" style="flex: 2; min-width: 250px;">
+            <label for="report-input-note">Catatan / Doa Penutup:</label>
+            <input type="text" id="report-input-note" class="report-input" placeholder="Teks doa atau catatan rekening infaq transfer...">
+          </div>
+          <div class="report-control-item" style="align-items: center; justify-content: flex-start; min-width: 180px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 18px;">
+              <input type="checkbox" id="report-check-qris" checked style="width: 16px; height: 16px; cursor: pointer;">
+              <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-main);">Tampilkan Barcode QRIS</span>
+            </label>
           </div>
         </div>
 
@@ -549,6 +572,9 @@ class ReportPrinter {
     const inputTakmir = document.getElementById("report-input-takmir");
     const inputBendahara = document.getElementById("report-input-bendahara");
     const inputCity = document.getElementById("report-input-city");
+    const inputTitle = document.getElementById("report-input-title");
+    const inputNote = document.getElementById("report-input-note");
+    const checkQris = document.getElementById("report-check-qris");
     const printBtn = document.getElementById("btn-execute-print");
 
     if (closeBtn) {
@@ -582,19 +608,25 @@ class ReportPrinter {
       });
     }
 
-    const updateSigners = () => {
-      const signers = {
-        takmir: inputTakmir.value.trim() || "Ketua Takmir",
-        bendahara: inputBendahara.value.trim() || "Bendahara",
-        city: inputCity.value.trim() || "Sleman"
+    const updateCustomSettings = () => {
+      const settings = {
+        takmir: inputTakmir ? inputTakmir.value.trim() : "Ketua Takmir",
+        bendahara: inputBendahara ? inputBendahara.value.trim() : "Bendahara",
+        city: inputCity ? inputCity.value.trim() : "Sleman",
+        title: inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : "LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID",
+        customNote: inputNote ? inputNote.value.trim() : "",
+        showQris: checkQris ? checkQris.checked : true
       };
-      this.saveSigners(signers);
+      this.saveSigners(settings);
       this.render();
     };
 
-    if (inputTakmir) inputTakmir.addEventListener("input", updateSigners);
-    if (inputBendahara) inputBendahara.addEventListener("input", updateSigners);
-    if (inputCity) inputCity.addEventListener("input", updateSigners);
+    if (inputTakmir) inputTakmir.addEventListener("input", updateCustomSettings);
+    if (inputBendahara) inputBendahara.addEventListener("input", updateCustomSettings);
+    if (inputCity) inputCity.addEventListener("input", updateCustomSettings);
+    if (inputTitle) inputTitle.addEventListener("input", updateCustomSettings);
+    if (inputNote) inputNote.addEventListener("input", updateCustomSettings);
+    if (checkQris) checkQris.addEventListener("change", updateCustomSettings);
 
     if (printBtn) {
       printBtn.addEventListener("click", () => this.print());
