@@ -547,36 +547,35 @@
    Khusus untuk mencetak bersih ke kertas A4 tanpa gangguan interface layar
    ========================================================================== */
 @media print {
-  /* Sembunyikan seluruh isi body display layar */
-  body * {
-    visibility: hidden !important;
-  }
-
-  /* Tampilkan hanya lembar laporan cetak dan isinya */
-  #printable-report-sheet,
-  #printable-report-sheet * {
-    visibility: visible !important;
-  }
-
-  #printable-report-sheet {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+  /* Reset body and html layout completely */
+  html, body {
+    display: block !important;
     width: 100% !important;
-    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
     margin: 0 !important;
     padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-    background: #ffffff !important;
-    color: #000000 !important;
   }
 
+  /* Sembunyikan elemen latar belakang utama */
+  body > *:not(.report-modal-overlay) {
+    display: none !important;
+  }
+
+  /* Atur container modal agar transparan dan static */
   .report-modal-overlay {
     position: static !important;
     background: transparent !important;
     padding: 0 !important;
+    margin: 0 !important;
     display: block !important;
+    overflow: visible !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    width: 100% !important;
   }
 
   .report-modal-dialog {
@@ -586,6 +585,11 @@
     border: none !important;
     background: transparent !important;
     border-radius: 0 !important;
+    overflow: visible !important;
+    animation: none !important;
+    transform: none !important;
+    display: block !important;
+    width: 100% !important;
   }
 
   .report-modal-header,
@@ -600,12 +604,28 @@
     padding: 0 !important;
     overflow: visible !important;
     display: block !important;
+    width: 100% !important;
+  }
+
+  .printable-report-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
   }
 
   /* Format halaman kertas A4 */
   @page {
     size: A4 portrait;
-    margin: 12mm 15mm 12mm 15mm;
+    margin: 10mm 14mm 10mm 14mm;
   }
 
   /* Cegah elemen terpotong aneh di tengah halaman */
