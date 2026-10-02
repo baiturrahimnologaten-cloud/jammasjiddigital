@@ -11,14 +11,14 @@ class ReportPrinter {
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
-    
+
     // Default signers storage key
     this.STORAGE_KEY_SIGNERS = "masjid_report_signers";
-    
+
     this.selectedYear = new Date().getFullYear();
     this.selectedMonth = new Date().getMonth() + 1; // 1-12
     this.showSignersDrawer = false;
-    
+
     this.currentData = null;
     this.initialized = false;
   }
@@ -47,7 +47,7 @@ class ReportPrinter {
         console.warn("Error parsing signers", e);
       }
     }
-    
+
     // Default signers & custom report options
     return {
       takmir: "H. Ahmad Syafi'i, M.Ag.",
@@ -74,13 +74,13 @@ class ReportPrinter {
     if (!this.initialized) {
       this.init(this.currentData);
     }
-    
+
     // Choose best initial month: if current month has no transactions, find latest transaction month
     this.detectInitialPeriod();
-    
+
     // Populate dropdowns
     this.populatePeriodSelects();
-    
+
     // Populate custom settings inputs
     const signers = this.getSigners();
     if (document.getElementById("report-input-takmir")) document.getElementById("report-input-takmir").value = signers.takmir || "";
@@ -89,10 +89,10 @@ class ReportPrinter {
     if (document.getElementById("report-input-title")) document.getElementById("report-input-title").value = signers.title || "LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID";
     if (document.getElementById("report-input-note")) document.getElementById("report-input-note").value = signers.customNote || "";
     if (document.getElementById("report-check-qris")) document.getElementById("report-check-qris").checked = signers.showQris !== false;
-    
+
     // Render preview
     this.render();
-    
+
     // Show modal
     const modal = document.getElementById("report-print-modal");
     if (modal) {
@@ -119,20 +119,20 @@ class ReportPrinter {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
-    
+
     const transactions = this.currentData?.infaqTransactions || [];
     if (transactions.length === 0) {
       this.selectedYear = currentYear;
       this.selectedMonth = currentMonth;
       return;
     }
-    
+
     // Check if transactions exist in current month
     const hasCurrent = transactions.some(tx => {
       const parts = tx.date.split('-');
       return parseInt(parts[0], 10) === currentYear && parseInt(parts[1], 10) === currentMonth;
     });
-    
+
     if (hasCurrent) {
       this.selectedYear = currentYear;
       this.selectedMonth = currentMonth;
@@ -157,14 +157,14 @@ class ReportPrinter {
   populatePeriodSelects() {
     const monthSelect = document.getElementById("report-select-month");
     const yearSelect = document.getElementById("report-select-year");
-    
+
     if (monthSelect) {
       monthSelect.innerHTML = this.months.map((m, idx) => {
         const val = idx + 1;
         return `<option value="${val}" ${val === this.selectedMonth ? 'selected' : ''}>${m}</option>`;
       }).join("");
     }
-    
+
     if (yearSelect) {
       // Gather all years from transactions + current year
       const yearsSet = new Set();
@@ -172,7 +172,7 @@ class ReportPrinter {
       yearsSet.add(currentYear);
       yearsSet.add(currentYear - 1);
       yearsSet.add(currentYear + 1);
-      
+
       const transactions = this.currentData?.infaqTransactions || [];
       transactions.forEach(tx => {
         if (tx.date) {
@@ -180,7 +180,7 @@ class ReportPrinter {
           if (y && !isNaN(y)) yearsSet.add(y);
         }
       });
-      
+
       const years = Array.from(yearsSet).sort((a, b) => b - a);
       yearSelect.innerHTML = years.map(y => {
         return `<option value="${y}" ${y === this.selectedYear ? 'selected' : ''}>${y}</option>`;
@@ -220,21 +220,21 @@ class ReportPrinter {
    */
   calculateReport(year, month) {
     const transactions = this.currentData?.infaqTransactions || [];
-    
+
     let saldoAwal = 0;
     let totalIncome = 0;
     let totalExpense = 0;
     const monthlyTxs = [];
-    
+
     // Sort transactions chronologically ascending
     const sorted = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
-    
+
     sorted.forEach(tx => {
       const parts = tx.date.split('-');
       const txYear = parseInt(parts[0], 10);
       const txMonth = parseInt(parts[1], 10);
       const amt = Number(tx.amount) || 0;
-      
+
       // Transactions occurring BEFORE the selected month accumulate into saldoAwal
       if (txYear < year || (txYear === year && txMonth < month)) {
         if (tx.type === 'income') {
@@ -242,13 +242,13 @@ class ReportPrinter {
         } else {
           saldoAwal -= amt;
         }
-      } 
+      }
       // Transactions occurring IN the selected month
       else if (txYear === year && txMonth === month) {
         monthlyTxs.push({ ...tx, amount: amt });
       }
     });
-    
+
     // Calculate running balance for each monthly transaction
     let running = saldoAwal;
     monthlyTxs.forEach(tx => {
@@ -261,9 +261,9 @@ class ReportPrinter {
       }
       tx.runningBalance = running;
     });
-    
+
     const saldoAkhir = running;
-    
+
     return {
       year,
       month,
@@ -282,23 +282,23 @@ class ReportPrinter {
   render() {
     const container = document.getElementById("printable-report-sheet");
     if (!container) return;
-    
+
     const report = this.calculateReport(this.selectedYear, this.selectedMonth);
     const signers = this.getSigners();
-    
+
     const mosqueName = this.currentData?.mosqueName || "Masjid Baiturrahim Nologaten";
     const mosqueAddress = this.currentData?.mosqueAddress || "Jl. Nologaten, Caturtunggal, Depok, Sleman, D.I. Yogyakarta";
     const logoUrl = this.currentData?.logoUrl || "assets/logo.png";
     const qrisUrl = this.currentData?.qrisUrl || "assets/qris.png";
-    
+
     // Today's formatted print date
     const today = new Date();
     const printDateStr = `${today.getDate()} ${this.months[today.getMonth()]} ${today.getFullYear()}`;
     const printTimeStr = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')} WIB`;
-    
+
     // Build table rows
     let tableRowsHtml = "";
-    
+
     // Initial balance row
     tableRowsHtml += `
       <tr style="background: #f1f5f9; font-weight: 600;">
@@ -310,7 +310,7 @@ class ReportPrinter {
         <td style="text-align: right; font-weight: 800; color: #0f172a;">${this.formatRupiah(report.saldoAwal)}</td>
       </tr>
     `;
-    
+
     if (report.transactions.length === 0) {
       tableRowsHtml += `
         <tr>
@@ -347,7 +347,7 @@ class ReportPrinter {
       <div class="report-kop-surat">
         <img src="${logoUrl}" alt="Logo Masjid" class="report-kop-logo" onerror="this.src='assets/logo.png'">
         <div class="report-kop-text">
-          <div class="report-kop-sub">DEWAN KEMAKMURAN MASJID (DKM) / TAKMIR</div>
+          <div class="report-kop-sub">PENGURUS KETAKMIRAN</div>
           <div class="report-kop-name">${mosqueName}</div>
           <div class="report-kop-address">${mosqueAddress}</div>
         </div>
@@ -408,7 +408,7 @@ class ReportPrinter {
         </table>
       </div>
 
-      <!-- BAGIAN BAWAH: QRIS DONASI & PENGESAHAN TANDA TANGAN -->
+      <!-- BAGIAN BAWAH: QRIS DONASI & NAMA PENGURUS -->
       <div class="report-footer-section">
         <div class="report-footer-grid">
           ${signers.showQris !== false ? `
@@ -416,27 +416,25 @@ class ReportPrinter {
           <div class="report-qris-box">
             <img src="${qrisUrl}" alt="QRIS Infaq" class="report-qris-thumb" onerror="this.src='assets/qris.png'">
             <div class="report-qris-info">
-              <strong>INFAQ & SEDEKAH NON-TUNAI</strong>
+              <strong>INFAQ &amp; SEDEKAH NON-TUNAI</strong>
               Pindai barcode QRIS resmi ${mosqueName} ini menggunakan Mobile Banking atau Dompet Digital Anda untuk berinfaq.
             </div>
           </div>
           ` : '<div></div>'}
 
-          <!-- Tanda Tangan DKM -->
+          <!-- Nama Terang Pengurus (tanpa kolom TTD) -->
           <div class="report-signature-block">
             <div class="report-signature-date">${signers.city || 'Sleman'}, ${printDateStr}</div>
             <div class="report-signers-flex">
               <div class="report-signer">
                 <div class="signer-role">Mengetahui,</div>
                 <div class="signer-title">Ketua Takmir / DKM</div>
-                <div class="signer-space"></div>
-                <div class="signer-name">${signers.takmir || 'Ketua Takmir'}</div>
+                <div class="signer-name" style="margin-top:6px;">${signers.takmir || 'Ketua Takmir'}</div>
               </div>
               <div class="report-signer">
                 <div class="signer-role">Dibuat oleh,</div>
                 <div class="signer-title">Bendahara Kas</div>
-                <div class="signer-space"></div>
-                <div class="signer-name">${signers.bendahara || 'Bendahara'}</div>
+                <div class="signer-name" style="margin-top:6px;">${signers.bendahara || 'Bendahara'}</div>
               </div>
             </div>
           </div>
@@ -462,15 +460,15 @@ class ReportPrinter {
       window.print();
       return;
     }
-    
+
     const reportHtml = sheetEl.innerHTML;
-    
+
     // Remove existing print iframe if any
     const existingIframe = document.getElementById("report-print-iframe");
     if (existingIframe) {
       existingIframe.remove();
     }
-    
+
     const iframe = document.createElement("iframe");
     iframe.id = "report-print-iframe";
     iframe.style.position = "fixed";
@@ -480,7 +478,7 @@ class ReportPrinter {
     iframe.style.height = "0";
     iframe.style.border = "none";
     document.body.appendChild(iframe);
-    
+
     try {
       const doc = iframe.contentWindow.document;
       doc.open();
@@ -738,16 +736,10 @@ class ReportPrinter {
               color: #0f172a;
               margin-top: 2px;
             }
-            .report-signer .signer-space {
-              height: 48px;
-              width: 100%;
-            }
             .report-signer .signer-name {
               font-size: 0.82rem;
               font-weight: 700;
               color: #0f172a;
-              border-top: 1px solid #0f172a;
-              padding-top: 3px;
               min-width: 130px;
             }
             .report-bottom-note {
@@ -776,7 +768,7 @@ class ReportPrinter {
         </html>
       `);
       doc.close();
-      
+
       setTimeout(() => {
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
