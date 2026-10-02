@@ -223,6 +223,17 @@ function initDashboard() {
     });
   }
 
+  // Register Print Monthly Financial Report Modal Triggers
+  const btnOpenPrintModal = document.getElementById("btn-open-print-modal");
+  const btnOpenPrintModalQuick = document.getElementById("btn-open-print-modal-quick");
+  const triggerPrintModal = () => {
+    if (window.reportPrinter) {
+      window.reportPrinter.open(localData);
+    }
+  };
+  if (btnOpenPrintModal) btnOpenPrintModal.addEventListener("click", triggerPrintModal);
+  if (btnOpenPrintModalQuick) btnOpenPrintModalQuick.addEventListener("click", triggerPrintModal);
+
   // Register Custom Confirm Modal Cancel Event
   const btnConfirmCancel = document.getElementById("btn-confirm-cancel");
   const confirmModal = document.getElementById("confirm-modal");
@@ -451,6 +462,13 @@ function initFormValues() {
   document.getElementById("val-duration-sholat").value = localData.sholatDuration;
   document.getElementById("val-duration-sholat-label").innerText = `${localData.sholatDuration} Menit`;
 
+  const fridayVal = (localData.fridayDuration !== undefined && localData.fridayDuration !== null) ? localData.fridayDuration : 5;
+  const fridayEl = document.getElementById("val-duration-friday");
+  if (fridayEl) {
+    fridayEl.value = fridayVal;
+    document.getElementById("val-duration-friday-label").innerText = `${fridayVal} Menit`;
+  }
+
   // Alarm Tones
   document.getElementById("val-adzan-tone").value = localData.adzanTone || "adzan_long";
   document.getElementById("val-iqomah-tone").value = localData.iqomahTone || "double_beep";
@@ -498,6 +516,7 @@ function initSliders() {
   setupSliderLabel("val-hijri-offset", "val-hijri-offset-label", "Hari");
   setupSliderLabel("val-duration-adzan", "val-duration-adzan-label", "Menit");
   setupSliderLabel("val-duration-sholat", "val-duration-sholat-label", "Menit");
+  setupSliderLabel("val-duration-friday", "val-duration-friday-label", "Menit");
 
   const prayers = ['subuh', 'dzuhur', 'ashar', 'maghrib', 'isya'];
   prayers.forEach(p => {
@@ -926,6 +945,10 @@ function saveAllChanges() {
   // Display timers and alarm tones
   localData.adzanDuration = parseInt(document.getElementById("val-duration-adzan").value);
   localData.sholatDuration = parseInt(document.getElementById("val-duration-sholat").value);
+  const fridayInput = document.getElementById("val-duration-friday");
+  if (fridayInput) {
+    localData.fridayDuration = parseInt(fridayInput.value) || 5;
+  }
   localData.adzanTone = document.getElementById("val-adzan-tone").value;
   localData.iqomahTone = document.getElementById("val-iqomah-tone").value;
 

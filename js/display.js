@@ -280,6 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnShowRecap = document.getElementById("btn-show-recap");
   const btnCloseRecap = document.getElementById("btn-close-recap");
   const overlayRecap = document.getElementById("overlay-recap");
+  const btnPrintRecap = document.getElementById("btn-print-recap-display");
   
   if (btnShowRecap && btnCloseRecap && overlayRecap) {
     btnShowRecap.addEventListener("click", () => {
@@ -296,6 +297,14 @@ document.addEventListener("DOMContentLoaded", () => {
     overlayRecap.addEventListener("click", (e) => {
       if (e.target === overlayRecap) {
         hideRecap();
+      }
+    });
+  }
+
+  if (btnPrintRecap) {
+    btnPrintRecap.addEventListener("click", () => {
+      if (window.reportPrinter) {
+        window.reportPrinter.open(config);
       }
     });
   }
@@ -412,7 +421,8 @@ function syncStateWithClock() {
     const isFridayDzuhur = (isFriday && p === 'dzuhur');
     const adzanSec = config.adzanDuration * 60;
     const iqomahSec = isFridayDzuhur ? 0 : (config.iqomah[p] || 0) * 60;
-    const sholatSec = isFridayDzuhur ? 35 * 60 : config.sholatDuration * 60; // 35 minutes of Friday Khutbah + Sholat
+    const fridayDurationMin = (config.fridayDuration !== undefined && config.fridayDuration !== null) ? Number(config.fridayDuration) : 5;
+    const sholatSec = isFridayDzuhur ? fridayDurationMin * 60 : config.sholatDuration * 60; // 5 minutes Friday blank screen, then return to normal schedule
 
     const adzanEnd = startSec + adzanSec;
     const iqomahEnd = adzanEnd + iqomahSec;
@@ -533,7 +543,8 @@ function tickStateCountdown() {
         if (iqomahDuration > 0) {
           transitionToState('IQOMAH', activePrayer, iqomahDuration * 60);
         } else {
-          const sholatSecs = isFridayDzuhur ? 35 * 60 : (config.sholatDuration * 60);
+          const fridayDurationMin = (config.fridayDuration !== undefined && config.fridayDuration !== null) ? Number(config.fridayDuration) : 5;
+          const sholatSecs = isFridayDzuhur ? fridayDurationMin * 60 : (config.sholatDuration * 60);
           transitionToState('SHOLAT', activePrayer, sholatSecs);
         }
       }

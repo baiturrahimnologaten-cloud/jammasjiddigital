@@ -25,6 +25,7 @@ const DEFAULT_DATA = {
     isya: 7
   },
   sholatDuration: 15, // minutes of blank screen
+  fridayDuration: 5, // minutes of blank screen during Friday prayer (5 menit jeda layar hitam)
   adzanDuration: 3, // minutes of adzan overlay
   adzanTone: "adzan_long", // Nada alarm saat masuk waktu adzan (5x)
   iqomahTone: "double_beep", // Nada alarm saat jeda iqomah selesai/sholat mulai (3x)

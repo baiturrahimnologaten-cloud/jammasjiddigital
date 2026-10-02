@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jam Digital Masjid - Masjid Baiturrahim Nologaten</title>
   <link rel="stylesheet" href="css/display.css">
+  <link rel="stylesheet" href="css/report-print.css">
   
   <!-- Firebase SDK (v8 Compact for easy CDN loading in plain script files) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -158,9 +159,15 @@
     <div class="recap-modal-card glass-card">
       <div class="recap-modal-header">
         <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--accent-gold); margin: 0;">Transparansi Kas Baiturrahim</h2>
-        <button type="button" class="btn-close-recap" id="btn-close-recap">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button type="button" class="btn-print-recap" id="btn-print-recap-display" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 600; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Cetak Laporan Bulanan
+          </button>
+          <button type="button" class="btn-close-recap" id="btn-close-recap">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
       </div>
       
       <!-- Summaries row -->
@@ -213,6 +220,7 @@
   <script src="js/prayer-calculator.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/data-store.js"></script>
+  <script src="js/report-printer.js"></script>
   <script src="js/display.js"></script>
 </body>
 </html>
