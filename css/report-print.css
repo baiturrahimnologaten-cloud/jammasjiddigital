@@ -420,19 +420,12 @@
   font-style: italic;
 }
 
-/* Kotak Donasi QRIS & Tanda Tangan */
+/* Kotak Donasi QRIS */
 .report-footer-section {
   margin-top: auto;
   border-top: 1px dashed #cbd5e1;
   padding-top: 16px;
   page-break-inside: avoid;
-}
-
-.report-footer-grid {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
 }
 
 /* QRIS Section di Laporan */
@@ -445,6 +438,7 @@
   padding: 10px 14px;
   border-radius: 8px;
   max-width: 320px;
+  margin-bottom: 14px;
 }
 
 .report-qris-thumb {
@@ -469,58 +463,6 @@
   display: block;
   font-size: 0.76rem;
   margin-bottom: 2px;
-}
-
-/* Blok Tanda Tangan Pengurus (DKM) */
-.report-signature-block {
-  text-align: right;
-  flex-grow: 1;
-}
-
-.report-signature-date {
-  font-size: 0.8rem;
-  color: #334155;
-  margin-bottom: 12px;
-}
-
-.report-signers-flex {
-  display: flex;
-  justify-content: flex-end;
-  gap: 40px;
-  text-align: center;
-}
-
-.report-signer {
-  min-width: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.report-signer .signer-role {
-  font-size: 0.75rem;
-  color: #475569;
-}
-
-.report-signer .signer-title {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-top: 2px;
-}
-
-.report-signer .signer-space {
-  height: 55px;
-  width: 100%;
-}
-
-.report-signer .signer-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #0f172a;
-  border-top: 1px solid #0f172a;
-  padding-top: 3px;
-  min-width: 130px;
 }
 
 /* Doa & Catatan Bawah */

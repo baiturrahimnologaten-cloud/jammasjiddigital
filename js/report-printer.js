@@ -408,44 +408,25 @@ class ReportPrinter {
         </table>
       </div>
 
-      <!-- BAGIAN BAWAH: QRIS DONASI & NAMA PENGURUS -->
+      <!-- BAGIAN BAWAH: QRIS DONASI & DOA -->
       <div class="report-footer-section">
-        <div class="report-footer-grid">
-          ${signers.showQris !== false ? `
-          <!-- Kotak QRIS Jamaah -->
-          <div class="report-qris-box">
-            <img src="${qrisUrl}" alt="QRIS Infaq" class="report-qris-thumb" onerror="this.src='assets/qris.png'">
-            <div class="report-qris-info">
-              <strong>INFAQ &amp; SEDEKAH NON-TUNAI</strong>
-              Pindai barcode QRIS resmi ${mosqueName} ini menggunakan Mobile Banking atau Dompet Digital Anda untuk berinfaq.
-            </div>
-          </div>
-          ` : '<div></div>'}
-
-          <!-- Nama Terang Pengurus (tanpa kolom TTD) -->
-          <div class="report-signature-block">
-            <div class="report-signature-date">${signers.city || 'Sleman'}, ${printDateStr}</div>
-            <div class="report-signers-flex">
-              <div class="report-signer">
-                <div class="signer-role">Mengetahui,</div>
-                <div class="signer-title">Ketua Takmir / DKM</div>
-                <div class="signer-name" style="margin-top:6px;">${signers.takmir || 'Ketua Takmir'}</div>
-              </div>
-              <div class="report-signer">
-                <div class="signer-role">Dibuat oleh,</div>
-                <div class="signer-title">Bendahara Kas</div>
-                <div class="signer-name" style="margin-top:6px;">${signers.bendahara || 'Bendahara'}</div>
-              </div>
-            </div>
+        ${signers.showQris !== false ? `
+        <!-- Kotak QRIS Jamaah -->
+        <div class="report-qris-box">
+          <img src="${qrisUrl}" alt="QRIS Infaq" class="report-qris-thumb" onerror="this.src='assets/qris.png'">
+          <div class="report-qris-info">
+            <strong>INFAQ &amp; SEDEKAH NON-TUNAI</strong>
+            Pindai barcode QRIS resmi ${mosqueName} ini menggunakan Mobile Banking atau Dompet Digital Anda untuk berinfaq.
           </div>
         </div>
+        ` : ''}
 
         <!-- DOA & WATERMARK RESMI -->
         <div class="report-bottom-note">
           <div class="report-doa">
             "${signers.customNote || 'Semoga Allah SWT melimpahkan berkah, pahala berlipat ganda, dan kelapangan rezeki bagi para muhsinin dan jamaah sekalian. Aamiin.'}"
           </div>
-          <div>Dokumen Resmi Papan Pengumuman • Sistem Digital Masjid</div>
+          <div>Dokumen Resmi Papan Pengumuman • Sistem Digital Masjid • ${printDateStr}</div>
         </div>
       </div>
     `;
@@ -662,16 +643,10 @@ class ReportPrinter {
               font-style: italic;
             }
             .report-footer-section {
-              margin-top: 14px;
+              margin-top: 16px;
               border-top: 1px dashed #cbd5e1;
               padding-top: 14px;
               page-break-inside: avoid;
-            }
-            .report-footer-grid {
-              display: flex;
-              justify-content: space-between;
-              align-items: flex-start;
-              gap: 20px;
             }
             .report-qris-box {
               display: flex;
@@ -682,6 +657,7 @@ class ReportPrinter {
               padding: 8px 12px;
               border-radius: 8px;
               max-width: 320px;
+              margin-bottom: 12px;
             }
             .report-qris-thumb {
               width: 60px;
@@ -703,44 +679,6 @@ class ReportPrinter {
               display: block;
               font-size: 0.74rem;
               margin-bottom: 2px;
-            }
-            .report-signature-block {
-              text-align: right;
-              flex-grow: 1;
-              page-break-inside: avoid;
-            }
-            .report-signature-date {
-              font-size: 0.8rem;
-              color: #334155;
-              margin-bottom: 8px;
-            }
-            .report-signers-flex {
-              display: flex;
-              justify-content: flex-end;
-              gap: 40px;
-              text-align: center;
-            }
-            .report-signer {
-              min-width: 140px;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-            }
-            .report-signer .signer-role {
-              font-size: 0.75rem;
-              color: #475569;
-            }
-            .report-signer .signer-title {
-              font-size: 0.78rem;
-              font-weight: 700;
-              color: #0f172a;
-              margin-top: 2px;
-            }
-            .report-signer .signer-name {
-              font-size: 0.82rem;
-              font-weight: 700;
-              color: #0f172a;
-              min-width: 130px;
             }
             .report-bottom-note {
               margin-top: 14px;
@@ -836,23 +774,11 @@ class ReportPrinter {
           </div>
         </div>
 
-        <!-- Optional Drawer for Signers & Customization -->
+        <!-- Optional Drawer for Customization -->
         <div class="report-signers-panel" id="report-signers-drawer" style="display: none;">
           <div class="report-control-item" style="flex: 2; min-width: 250px;">
             <label for="report-input-title">Judul Laporan:</label>
-            <input type="text" id="report-input-title" class="report-input" placeholder="LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID">
-          </div>
-          <div class="report-control-item">
-            <label for="report-input-takmir">Ketua Takmir / DKM:</label>
-            <input type="text" id="report-input-takmir" class="report-input" placeholder="H. Ahmad Syafi'i, M.Ag.">
-          </div>
-          <div class="report-control-item">
-            <label for="report-input-bendahara">Bendahara Kas:</label>
-            <input type="text" id="report-input-bendahara" class="report-input" placeholder="H. Muhammad Ridwan">
-          </div>
-          <div class="report-control-item">
-            <label for="report-input-city">Kota Domisili:</label>
-            <input type="text" id="report-input-city" class="report-input" placeholder="Sleman">
+            <input type="text" id="report-input-title" class="report-input" placeholder="LAPORAN KEUANGAN &amp; PERTANGGUNGJAWABAN KAS MASJID">
           </div>
           <div class="report-control-item" style="flex: 2; min-width: 250px;">
             <label for="report-input-note">Catatan / Doa Penutup:</label>
@@ -888,9 +814,6 @@ class ReportPrinter {
     const yearSelect = document.getElementById("report-select-year");
     const toggleSignersBtn = document.getElementById("btn-toggle-signers");
     const signersDrawer = document.getElementById("report-signers-drawer");
-    const inputTakmir = document.getElementById("report-input-takmir");
-    const inputBendahara = document.getElementById("report-input-bendahara");
-    const inputCity = document.getElementById("report-input-city");
     const inputTitle = document.getElementById("report-input-title");
     const inputNote = document.getElementById("report-input-note");
     const checkQris = document.getElementById("report-check-qris");
@@ -929,9 +852,6 @@ class ReportPrinter {
 
     const updateCustomSettings = () => {
       const settings = {
-        takmir: inputTakmir ? inputTakmir.value.trim() : "Ketua Takmir",
-        bendahara: inputBendahara ? inputBendahara.value.trim() : "Bendahara",
-        city: inputCity ? inputCity.value.trim() : "Sleman",
         title: inputTitle && inputTitle.value.trim() ? inputTitle.value.trim() : "LAPORAN KEUANGAN & PERTANGGUNGJAWABAN KAS MASJID",
         customNote: inputNote ? inputNote.value.trim() : "",
         showQris: checkQris ? checkQris.checked : true
@@ -940,9 +860,6 @@ class ReportPrinter {
       this.render();
     };
 
-    if (inputTakmir) inputTakmir.addEventListener("input", updateCustomSettings);
-    if (inputBendahara) inputBendahara.addEventListener("input", updateCustomSettings);
-    if (inputCity) inputCity.addEventListener("input", updateCustomSettings);
     if (inputTitle) inputTitle.addEventListener("input", updateCustomSettings);
     if (inputNote) inputNote.addEventListener("input", updateCustomSettings);
     if (checkQris) checkQris.addEventListener("change", updateCustomSettings);
