@@ -7,6 +7,7 @@
 let localData = null;
 let currentTheme = 'light';
 let pendingDeleteTxId = null; // Tracks transaction ID pending deletion confirm
+let pendingEditTxId = null;   // Tracks transaction ID being edited
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Fetch current data
@@ -264,6 +265,83 @@ function initDashboard() {
       confirmModal.classList.remove("show");
       pendingDeleteTxId = null;
     });
+  }
+
+  // Register Edit Transaction Modal Events
+  const editModal = document.getElementById("edit-tx-modal");
+  const btnEditCancel = document.getElementById("btn-edit-cancel");
+  const btnEditSave = document.getElementById("btn-edit-save");
+  const editAmountInput = document.getElementById("edit-tx-amount");
+  const editAmountHelper = document.getElementById("edit-tx-amount-helper");
+
+  if (editModal) {
+    // Close edit modal on cancel button
+    if (btnEditCancel) {
+      btnEditCancel.addEventListener("click", () => {
+        editModal.classList.remove("show");
+        pendingEditTxId = null;
+      });
+    }
+
+    // Close edit modal on backdrop click
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) {
+        editModal.classList.remove("show");
+        pendingEditTxId = null;
+      }
+    });
+
+    // Live Rupiah helper for edit amount field
+    if (editAmountInput && editAmountHelper) {
+      editAmountInput.addEventListener("input", () => {
+        const val = parseInt(editAmountInput.value);
+        if (isNaN(val) || val <= 0) {
+          editAmountHelper.innerText = "";
+        } else {
+          const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(val);
+          editAmountHelper.innerText = `Konfirmasi: ${formatted.replace("Rp", "Rp ")}`;
+        }
+      });
+    }
+
+    // Save edit
+    if (btnEditSave) {
+      btnEditSave.addEventListener("click", () => {
+        if (!pendingEditTxId) return;
+
+        const newDate = document.getElementById("edit-tx-date").value;
+        const newType = document.getElementById("edit-tx-type").value;
+        const newAmount = document.getElementById("edit-tx-amount").value.trim();
+        const newDesc = document.getElementById("edit-tx-desc").value.trim();
+
+        if (!newDate) {
+          alert("Silakan pilih tanggal transaksi.");
+          return;
+        }
+        if (!newAmount || isNaN(newAmount) || parseInt(newAmount) <= 0) {
+          alert("Silakan masukkan jumlah uang yang valid (angka positif).");
+          return;
+        }
+        if (!newDesc) {
+          alert("Silakan masukkan keterangan transaksi.");
+          return;
+        }
+
+        // Find and update the transaction
+        const tx = (localData.infaqTransactions || []).find(t => t.id === pendingEditTxId);
+        if (tx) {
+          tx.date = newDate;
+          tx.type = newType;
+          tx.amount = parseInt(newAmount);
+          tx.description = newDesc;
+          saveAllChanges();
+          renderFinanceLedger();
+        }
+
+        editModal.classList.remove("show");
+        pendingEditTxId = null;
+      });
+    }
   }
 }
 
@@ -1295,8 +1373,11 @@ function renderFinanceLedger() {
         <td style="padding: 12px 10px; text-align: right; font-weight: 800; font-size: 0.95rem; color: ${isIncome ? '#10b981' : '#ef4444'};">
           ${isIncome ? '+' : '-'} ${formatRupiah(tx.amount).replace("Rp", "Rp ")}
         </td>
-        <td style="padding: 12px 5px; text-align: center;">
-          <button type="button" class="btn-delete-tx" data-id="${tx.id}" style="background: none; border: none; color: var(--danger-color); cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(239,68,68,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+        <td style="padding: 12px 5px; text-align: center; white-space: nowrap;">
+          <button type="button" class="btn-edit-tx" data-id="${tx.id}" title="Edit Transaksi" style="background: none; border: none; color: #3b82f6; cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(59,130,246,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+          </button>
+          <button type="button" class="btn-delete-tx" data-id="${tx.id}" title="Hapus Transaksi" style="background: none; border: none; color: var(--danger-color); cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='rgba(239,68,68,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10v-3a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </button>
         </td>
@@ -1304,10 +1385,38 @@ function renderFinanceLedger() {
     `;
   }).join("");
   
+  // Bind edit event listeners
+  const editBtns = tbody.querySelectorAll(".btn-edit-tx");
+  editBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const txId = btn.getAttribute("data-id");
+      const tx = (localData.infaqTransactions || []).find(t => t.id === txId);
+      if (!tx) return;
+
+      // Populate edit modal fields with current values
+      pendingEditTxId = txId;
+      document.getElementById("edit-tx-date").value = tx.date || "";
+      document.getElementById("edit-tx-type").value = tx.type || "income";
+      document.getElementById("edit-tx-amount").value = tx.amount || "";
+      document.getElementById("edit-tx-desc").value = tx.description || "";
+
+      // Update rupiah helper
+      const helper = document.getElementById("edit-tx-amount-helper");
+      if (helper && tx.amount > 0) {
+        const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(tx.amount);
+        helper.innerText = `Konfirmasi: ${formatted.replace("Rp", "Rp ")}`;
+      }
+
+      // Show edit modal
+      const modal = document.getElementById("edit-tx-modal");
+      if (modal) modal.classList.add("show");
+    });
+  });
+
   // Bind delete event listeners
   const deleteBtns = tbody.querySelectorAll(".btn-delete-tx");
   deleteBtns.forEach(btn => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", () => {
       const txId = btn.getAttribute("data-id");
       pendingDeleteTxId = txId;
       const modal = document.getElementById("confirm-modal");

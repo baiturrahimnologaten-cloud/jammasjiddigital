@@ -780,6 +780,44 @@
     </div>
   </div>
 
+  <!-- Edit Transaction Modal -->
+  <div id="edit-tx-modal" class="confirm-modal-overlay">
+    <div class="confirm-modal-card" style="max-width: 440px; text-align: left;">
+      <div class="confirm-modal-icon" style="background: rgba(59, 130, 246, 0.1); align-self: center;">
+        <svg width="24" height="24" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+        </svg>
+      </div>
+      <div class="confirm-modal-title" style="align-self: center;">Edit Transaksi</div>
+      <div style="width: 100%; display: flex; flex-direction: column; gap: 14px; margin-top: 4px;">
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px;">Tanggal</label>
+          <input type="date" id="edit-tx-date" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px;">Jenis Transaksi</label>
+          <select id="edit-tx-type" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+            <option value="income">Pemasukan (+)</option>
+            <option value="expense">Pengeluaran (-)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px;">Jumlah (Rupiah)</label>
+          <input type="number" id="edit-tx-amount" min="1" placeholder="Contoh: 500000" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+          <div id="edit-tx-amount-helper" style="font-size: 0.78rem; color: #3b82f6; margin-top: 4px; font-weight: 600;"></div>
+        </div>
+        <div>
+          <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 5px;">Keterangan</label>
+          <input type="text" id="edit-tx-desc" placeholder="Keterangan transaksi" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-family: inherit; font-size: 0.9rem;">
+        </div>
+      </div>
+      <div class="confirm-modal-actions">
+        <button type="button" class="btn btn-secondary" id="btn-edit-cancel">Batal</button>
+        <button type="button" class="btn" id="btn-edit-save" style="background: #3b82f6; color: white; border: none;">Simpan Perubahan</button>
+      </div>
+    </div>
+  </div>
+
   <!-- APPLICATION SCRIPTS -->
   <script src="js/firebase-config.js"></script>
   <script src="js/data-store.js"></script>
