@@ -246,6 +246,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  window.addEventListener("resize", () => {
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      ["overlay-adzan", "overlay-iqomah", "overlay-sholat"].forEach((id) => {
+        document.getElementById(id).classList.remove("show");
+      });
+      currentState = "NORMAL";
+      activePrayer = null;
+      stateCountdownSeconds = 0;
+    } else {
+      syncStateWithClock();
+    }
+  });
+
   // Start the 1-second system clock loop
   setInterval(tickClock, 1000);
   
@@ -308,6 +321,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  const donationModal = document.getElementById("donation-modal");
+  const closeDonation = document.getElementById("btn-close-donation");
+  document.querySelectorAll("[data-open-donation]").forEach((button) => {
+    button.addEventListener("click", () => donationModal.showModal());
+  });
+  closeDonation.addEventListener("click", () => donationModal.close());
+  donationModal.addEventListener("click", (event) => {
+    if (event.target === donationModal) donationModal.close();
+  });
 });
 
 /**
@@ -349,6 +372,10 @@ function renderMobilePortal() {
   const address = config.mosqueAddress || "";
   const logoUrl = config.logoUrl || "assets/logo.png";
   const qrisUrl = config.qrisUrl || "assets/qris.png";
+  const transferBank = (config.transferBank || "").trim();
+  const transferAccount = (config.transferAccountNumber || "").trim();
+  const transferName = (config.transferAccountName || "").trim();
+  const transferNote = (config.transferNote || "").trim();
 
   ["mobile-mosque-name", "mobile-profile-name", "mobile-footer-name"].forEach((id) => {
     document.getElementById(id).textContent = name;
@@ -360,8 +387,64 @@ function renderMobilePortal() {
     document.getElementById(id).src = logoUrl;
   });
   document.getElementById("mobile-qris").src = qrisUrl;
+  document.getElementById("donation-modal-qris").src = qrisUrl;
+  document.getElementById("mobile-hero-title").textContent =
+    config.mobileHeroTitle || "Ruang ibadah, ruang kebersamaan.";
+  document.getElementById("mobile-profile-description").textContent =
+    config.mobileProfileDescription ||
+    "Masjid Baiturrahim menjadi tempat beribadah dan berkumpulnya masyarakat untuk menguatkan ukhuwah serta kegiatan keislaman.";
+  document.getElementById("slide-title").textContent =
+    config.displaySlideTitle || "DOKUMENTASI KEGIATAN";
   document.getElementById("mobile-map-link").href =
     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${config.latitude},${config.longitude}`)}`;
+
+  const transferInfo = document.getElementById("mobile-transfer-info");
+  const modalTransfer = document.getElementById("donation-modal-transfer");
+  const hasTransferDetails = Boolean(transferBank && transferAccount);
+  transferInfo.hidden = !hasTransferDetails;
+  modalTransfer.hidden = !hasTransferDetails;
+  if (hasTransferDetails) {
+    document.getElementById("mobile-transfer-bank").textContent = transferBank;
+    document.getElementById("mobile-transfer-account").textContent = transferAccount;
+    document.getElementById("mobile-transfer-name").textContent = transferName || name;
+    document.getElementById("mobile-transfer-note").textContent = transferNote;
+    document.getElementById("mobile-transfer-note").hidden = !transferNote;
+    document.getElementById("donation-modal-bank").textContent = transferBank;
+    document.getElementById("donation-modal-account").textContent = transferAccount;
+    document.getElementById("donation-modal-name").textContent = transferName || name;
+  }
+
+  const roles = [
+    ["Ketua Takmir", "chair", "Koordinasi dan arah kegiatan masjid."],
+    ["Sekretaris", "secretary", "Administrasi dan dokumentasi kegiatan."],
+    ["Bendahara", "treasurer", "Pengelolaan serta pencatatan kas masjid."],
+    ["Bidang Ibadah & Dakwah", "worship", "Pelayanan ibadah, kajian, dan pendidikan."],
+    ["Bidang Sosial & Kemasyarakatan", "social", "Kegiatan sosial dan pelayanan warga."],
+    ["Bidang Sarana & Prasarana", "facilities", "Perawatan fasilitas dan lingkungan masjid."]
+  ];
+  const committeeGrid = document.getElementById("mobile-committee-grid");
+  committeeGrid.replaceChildren();
+  roles.forEach(([title, key, responsibility], index) => {
+    const card = document.createElement("article");
+    const number = document.createElement("span");
+    number.textContent = String(index + 1).padStart(2, "0");
+    const details = document.createElement("div");
+    const role = document.createElement("h3");
+    role.textContent = title;
+    const description = document.createElement("p");
+    const memberName = (config.committeeMembers || {})[key];
+    if (memberName) {
+      const member = document.createElement("strong");
+      member.textContent = memberName;
+      description.textContent = responsibility;
+      details.append(role, member, description);
+    } else {
+      description.textContent = responsibility;
+      details.append(role, description);
+    }
+    card.append(number, details);
+    committeeGrid.append(card);
+  });
 
   const announcements = document.getElementById("mobile-announcements");
   announcements.replaceChildren();
@@ -512,6 +595,12 @@ function tickClock() {
  */
 function syncStateWithClock() {
   if (!config || !prayerTimes) return;
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    currentState = 'NORMAL';
+    activePrayer = null;
+    stateCountdownSeconds = 0;
+    return;
+  }
 
   const now = new Date();
   const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
@@ -570,6 +659,16 @@ function syncStateWithClock() {
  * Handle transitions between display states
  */
 function transitionToState(newState, prayerName, durationSec) {
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    ["overlay-adzan", "overlay-iqomah", "overlay-sholat"].forEach((id) => {
+      document.getElementById(id).classList.remove("show");
+    });
+    currentState = "NORMAL";
+    activePrayer = null;
+    stateCountdownSeconds = 0;
+    return;
+  }
+
   console.log(`Transition state: ${currentState} -> ${newState} (${prayerName || 'None'}, duration: ${durationSec}s)`);
   
   // Clean up old state visuals
@@ -639,6 +738,13 @@ function transitionToState(newState, prayerName, durationSec) {
  * Ticks the state machine countdowns - runs every 1 second
  */
 function tickStateCountdown() {
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    currentState = 'NORMAL';
+    activePrayer = null;
+    stateCountdownSeconds = 0;
+    return;
+  }
+
   // If we are in interactive states, count down
   if (currentState !== 'NORMAL') {
     stateCountdownSeconds--;

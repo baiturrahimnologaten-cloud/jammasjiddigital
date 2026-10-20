@@ -260,6 +260,32 @@
               <textarea id="txt-mosque-address" rows="3" placeholder="Alamat lengkap masjid..."></textarea>
             </div>
             <div class="form-group">
+              <label for="txt-mobile-hero-title">Judul sambutan halaman publik</label>
+              <input type="text" id="txt-mobile-hero-title" maxlength="90" placeholder="Ruang ibadah, ruang kebersamaan.">
+            </div>
+            <div class="form-group">
+              <label for="txt-mobile-profile-description">Deskripsi profil masjid</label>
+              <textarea id="txt-mobile-profile-description" rows="3" maxlength="300" placeholder="Tuliskan deskripsi singkat masjid..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="txt-display-slide-title">Judul dokumentasi di layar utama/TV</label>
+              <input type="text" id="txt-display-slide-title" maxlength="50" placeholder="DOKUMENTASI KEGIATAN">
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: -4px 0 16px;">Teks pengumuman yang dikelola di menu Pengumuman juga tampil di halaman publik.</p>
+            <div class="card-title">Nama Pengurus Takmir (opsional)</div>
+            <div class="form-row">
+              <div class="form-group"><label for="txt-committee-chair">Ketua Takmir</label><input type="text" id="txt-committee-chair" placeholder="Nama pengurus"></div>
+              <div class="form-group"><label for="txt-committee-secretary">Sekretaris</label><input type="text" id="txt-committee-secretary" placeholder="Nama pengurus"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="txt-committee-treasurer">Bendahara</label><input type="text" id="txt-committee-treasurer" placeholder="Nama pengurus"></div>
+              <div class="form-group"><label for="txt-committee-worship">Ibadah & Dakwah</label><input type="text" id="txt-committee-worship" placeholder="Nama pengurus / bidang"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="txt-committee-social">Sosial & Kemasyarakatan</label><input type="text" id="txt-committee-social" placeholder="Nama pengurus / bidang"></div>
+              <div class="form-group"><label for="txt-committee-facilities">Sarana & Prasarana</label><input type="text" id="txt-committee-facilities" placeholder="Nama pengurus / bidang"></div>
+            </div>
+            <div class="form-group">
               <label for="txt-admin-password">Kata Sandi Dashboard Admin</label>
               <div class="password-input-wrapper">
                 <input type="password" id="txt-admin-password" placeholder="Ubah kata sandi login...">
@@ -434,6 +460,27 @@
                   </div>
                 </div>
               </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="txt-transfer-bank">Nama bank (opsional)</label>
+                  <input type="text" id="txt-transfer-bank" maxlength="50" placeholder="Contoh: Bank Syariah Indonesia">
+                </div>
+                <div class="form-group">
+                  <label for="txt-transfer-account">Nomor rekening (opsional)</label>
+                  <input type="text" id="txt-transfer-account" inputmode="numeric" maxlength="40" placeholder="Masukkan nomor rekening">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="txt-transfer-name">Nama pemilik rekening</label>
+                  <input type="text" id="txt-transfer-name" maxlength="80" placeholder="Nama sesuai rekening">
+                </div>
+                <div class="form-group">
+                  <label for="txt-transfer-note">Catatan transfer (opsional)</label>
+                  <input type="text" id="txt-transfer-note" maxlength="120" placeholder="Contoh: Tulis INFAQ pada berita transfer">
+                </div>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Informasi transfer hanya ditampilkan di halaman publik jika nama bank dan nomor rekening diisi.</p>
             </div>
           </div>
 

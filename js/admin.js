@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPasswordToggles();
 
   // 5. Register DataStore listener for real-time password change detection & stats update
-  window.dataStore.addListener((newData) => {
+  window.dataStore.onUpdate((newData) => {
     const isLogged = sessionStorage.getItem("admin_logged_in") === "true";
     if (isLogged) {
       if (localData && newData.adminPassword !== localData.adminPassword) {
@@ -501,6 +501,17 @@ function initFormValues() {
   // General Tab
   document.getElementById("txt-mosque-name").value = localData.mosqueName;
   document.getElementById("txt-mosque-address").value = localData.mosqueAddress;
+  document.getElementById("txt-mobile-hero-title").value = localData.mobileHeroTitle || "";
+  document.getElementById("txt-mobile-profile-description").value = localData.mobileProfileDescription || "";
+  document.getElementById("txt-display-slide-title").value = localData.displaySlideTitle || "";
+  const committeeMembers = localData.committeeMembers || {};
+  ["chair", "secretary", "treasurer", "worship", "social", "facilities"].forEach((role) => {
+    document.getElementById(`txt-committee-${role}`).value = committeeMembers[role] || "";
+  });
+  document.getElementById("txt-transfer-bank").value = localData.transferBank || "";
+  document.getElementById("txt-transfer-account").value = localData.transferAccountNumber || "";
+  document.getElementById("txt-transfer-name").value = localData.transferAccountName || "";
+  document.getElementById("txt-transfer-note").value = localData.transferNote || "";
   document.getElementById("txt-admin-password").value = localData.adminPassword || "admin123";
   document.getElementById("val-hijri-offset").value = localData.hijriOffset;
   document.getElementById("val-hijri-offset-label").innerText = `${localData.hijriOffset} Hari`;
@@ -999,6 +1010,17 @@ function saveAllChanges() {
   // General Tab
   localData.mosqueName = document.getElementById("txt-mosque-name").value.trim();
   localData.mosqueAddress = document.getElementById("txt-mosque-address").value.trim();
+  localData.mobileHeroTitle = document.getElementById("txt-mobile-hero-title").value.trim();
+  localData.mobileProfileDescription = document.getElementById("txt-mobile-profile-description").value.trim();
+  localData.displaySlideTitle = document.getElementById("txt-display-slide-title").value.trim();
+  localData.committeeMembers = {};
+  ["chair", "secretary", "treasurer", "worship", "social", "facilities"].forEach((role) => {
+    localData.committeeMembers[role] = document.getElementById(`txt-committee-${role}`).value.trim();
+  });
+  localData.transferBank = document.getElementById("txt-transfer-bank").value.trim();
+  localData.transferAccountNumber = document.getElementById("txt-transfer-account").value.trim();
+  localData.transferAccountName = document.getElementById("txt-transfer-name").value.trim();
+  localData.transferNote = document.getElementById("txt-transfer-note").value.trim();
   localData.adminPassword = document.getElementById("txt-admin-password").value.trim() || "admin123";
   localData.hijriOffset = parseInt(document.getElementById("val-hijri-offset").value);
   localData.latitude = parseFloat(document.getElementById("num-latitude").value) || -7.7828;
@@ -1424,4 +1446,3 @@ function renderFinanceLedger() {
     });
   });
 }
-

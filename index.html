@@ -19,13 +19,13 @@
         <img src="assets/logo.png" alt="Logo Masjid Baiturrahim" id="mobile-logo">
         <span><strong id="mobile-mosque-name">Masjid Baiturrahim Nologaten</strong><small>Informasi Masjid</small></span>
       </a>
-      <a class="mobile-donate-link" href="#mobile-keuangan">Infaq</a>
+      <a class="mobile-donate-link" href="#mobile-donasi">Infaq</a>
     </header>
 
     <main class="mobile-page" id="mobile-home">
       <section class="mobile-hero">
         <span class="mobile-eyebrow">Assalamu'alaikum warahmatullahi wabarakatuh</span>
-        <h1>Ruang ibadah,<br><span>ruang kebersamaan.</span></h1>
+        <h1 id="mobile-hero-title">Ruang ibadah, ruang kebersamaan.</h1>
         <p id="mobile-hero-address">Jl. Nologaten, Caturtunggal, Depok, Sleman, D.I. Yogyakarta</p>
         <a class="mobile-hero-link" id="mobile-map-link" href="https://maps.google.com" target="_blank" rel="noopener noreferrer">
           Lihat lokasi <span aria-hidden="true">↗</span>
@@ -35,10 +35,11 @@
 
       <nav class="mobile-section-nav" aria-label="Navigasi informasi masjid">
         <a href="#mobile-profil">Profil</a>
-        <a href="#mobile-keuangan">Keuangan</a>
-        <a href="#mobile-ketakmiran">Takmir</a>
         <a href="#mobile-pengumuman">Pengumuman</a>
         <a href="#mobile-dokumentasi">Dokumentasi</a>
+        <a href="#mobile-ketakmiran">Takmir</a>
+        <a href="#mobile-keuangan">Keuangan</a>
+        <a href="#mobile-donasi">Donasi</a>
       </nav>
 
       <section class="mobile-section" id="mobile-profil">
@@ -53,7 +54,31 @@
             <p id="mobile-profile-address">Jl. Nologaten, Caturtunggal, Depok, Sleman, D.I. Yogyakarta</p>
           </div>
         </div>
-        <p class="mobile-section-copy">Masjid Baiturrahim menjadi tempat beribadah dan berkumpulnya masyarakat untuk menguatkan ukhuwah serta kegiatan keislaman.</p>
+        <p class="mobile-section-copy" id="mobile-profile-description">Masjid Baiturrahim menjadi tempat beribadah dan berkumpulnya masyarakat untuk menguatkan ukhuwah serta kegiatan keislaman.</p>
+      </section>
+
+      <section class="mobile-section" id="mobile-donasi">
+        <div class="mobile-section-heading">
+          <div><span class="mobile-kicker">BERBAGI KEBAIKAN</span><h2>Donasi & infaq</h2></div>
+          <span class="mobile-section-mark" aria-hidden="true">♡</span>
+        </div>
+        <div class="mobile-donation-card">
+          <div class="mobile-donation-intro">
+            <h3>Dukung kegiatan masjid</h3>
+            <p>Pilih QRIS untuk memindai kode, atau gunakan transfer bank jika informasinya tersedia.</p>
+          </div>
+          <button type="button" class="mobile-qris-trigger" data-open-donation aria-label="Perbesar QRIS infaq">
+            <img src="assets/qris.png" alt="Ketuk untuk memperbesar QRIS" id="mobile-qris">
+            <span>Ketuk untuk perbesar</span>
+          </button>
+          <div class="mobile-transfer-info" id="mobile-transfer-info">
+            <span class="mobile-kicker">TRANSFER BANK</span>
+            <strong id="mobile-transfer-bank"></strong>
+            <p>No. rekening <b id="mobile-transfer-account"></b></p>
+            <p>a.n. <b id="mobile-transfer-name"></b></p>
+            <p class="mobile-transfer-note" id="mobile-transfer-note"></p>
+          </div>
+        </div>
       </section>
 
       <section class="mobile-section" id="mobile-keuangan">
@@ -73,10 +98,6 @@
           <div class="mobile-subheading"><h3>Transaksi terbaru</h3><span>Transparansi kas</span></div>
           <div class="mobile-transaction-list" id="mobile-transactions"></div>
         </div>
-        <div class="mobile-qris-card">
-          <div><span class="mobile-kicker">BERBAGI KEBAIKAN</span><h3>Salurkan infaq</h3><p>Pindai kode QRIS untuk berinfaq ke Masjid Baiturrahim.</p></div>
-          <img src="assets/qris.png" alt="Kode QRIS infaq Masjid Baiturrahim" id="mobile-qris">
-        </div>
       </section>
 
       <section class="mobile-section" id="mobile-ketakmiran">
@@ -85,15 +106,7 @@
           <span class="mobile-section-mark" aria-hidden="true">⌂</span>
         </div>
         <p class="mobile-section-copy">Bidang pelayanan yang mendukung kegiatan dan kemakmuran masjid.</p>
-        <div class="mobile-committee-grid">
-          <article><span>01</span><div><h3>Ketua Takmir</h3><p>Koordinasi dan arah kegiatan masjid.</p></div></article>
-          <article><span>02</span><div><h3>Sekretaris</h3><p>Administrasi dan dokumentasi kegiatan.</p></div></article>
-          <article><span>03</span><div><h3>Bendahara</h3><p>Pengelolaan serta pencatatan kas masjid.</p></div></article>
-          <article><span>04</span><div><h3>Bidang Ibadah & Dakwah</h3><p>Pelayanan ibadah, kajian, dan pendidikan.</p></div></article>
-          <article><span>05</span><div><h3>Bidang Sosial & Kemasyarakatan</h3><p>Kegiatan sosial dan pelayanan warga.</p></div></article>
-          <article><span>06</span><div><h3>Bidang Sarana & Prasarana</h3><p>Perawatan fasilitas dan lingkungan masjid.</p></div></article>
-        </div>
-        <p class="mobile-small-note">Nama pengurus belum tersedia pada data yang dipublikasikan.</p>
+        <div class="mobile-committee-grid" id="mobile-committee-grid"></div>
       </section>
 
       <section class="mobile-section" id="mobile-pengumuman">
@@ -109,6 +122,7 @@
           <div><span class="mobile-kicker">CERITA KEGIATAN</span><h2>Dokumentasi</h2></div>
           <span class="mobile-section-mark" aria-hidden="true">▧</span>
         </div>
+        <p class="mobile-gallery-hint">Geser foto untuk melihat dokumentasi lainnya.</p>
         <div class="mobile-gallery" id="mobile-gallery"></div>
       </section>
 
@@ -120,6 +134,21 @@
       </footer>
     </main>
   </div>
+
+  <dialog class="donation-modal" id="donation-modal" aria-labelledby="donation-modal-title">
+    <div class="donation-modal-card">
+      <button type="button" class="donation-modal-close" id="btn-close-donation" aria-label="Tutup QRIS">×</button>
+      <span class="mobile-kicker">INFAQ MASJID</span>
+      <h2 id="donation-modal-title">Pindai QRIS untuk berdonasi</h2>
+      <p>Gunakan aplikasi pembayaran atau mobile banking untuk memindai kode berikut.</p>
+      <img src="assets/qris.png" alt="QRIS donasi Masjid Baiturrahim" id="donation-modal-qris">
+      <div class="donation-modal-transfer" id="donation-modal-transfer">
+        <strong id="donation-modal-bank"></strong>
+        <span>No. rekening <b id="donation-modal-account"></b></span>
+        <span>a.n. <b id="donation-modal-name"></b></span>
+      </div>
+    </div>
+  </dialog>
 
   <!-- HEADER SECTION -->
   <header class="glass-card" id="display-header">
@@ -197,7 +226,10 @@
     <div class="right-column">
       <!-- QRIS Card (Only Image, Large & Centered) -->
       <div class="qris-card glass-card" id="card-qris">
-        <img src="assets/qris.png" alt="QRIS Infaq Masjid" id="qris-code-img" class="qris-standalone-img">
+        <button type="button" class="qris-open-button" data-open-donation aria-label="Buka QRIS infaq ukuran besar">
+          <img src="assets/qris.png" alt="QRIS Infaq Masjid" id="qris-code-img" class="qris-standalone-img">
+          <span>Pindai untuk infaq · ketuk untuk memperbesar</span>
+        </button>
       </div>
 
       <!-- Finance Card -->
