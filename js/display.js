@@ -319,6 +319,7 @@ function renderStaticData() {
   // Mosque info
   document.getElementById("lbl-mosque-name").innerText = config.mosqueName;
   document.getElementById("lbl-mosque-address").innerText = config.mosqueAddress;
+  renderMobilePortal();
 
   // Financial info (automatically calculated from transactions)
   const formatRupiah = (val) => {
@@ -340,6 +341,115 @@ function renderStaticData() {
   // Only update DOM if the text changed to prevent animation jumps
   if (marqueeEl.innerHTML !== marqueeText) {
     marqueeEl.innerHTML = marqueeText;
+  }
+}
+
+function renderMobilePortal() {
+  const name = config.mosqueName || "Masjid Baiturrahim Nologaten";
+  const address = config.mosqueAddress || "";
+  const logoUrl = config.logoUrl || "assets/logo.png";
+  const qrisUrl = config.qrisUrl || "assets/qris.png";
+
+  ["mobile-mosque-name", "mobile-profile-name", "mobile-footer-name"].forEach((id) => {
+    document.getElementById(id).textContent = name;
+  });
+  ["mobile-hero-address", "mobile-profile-address", "mobile-footer-address"].forEach((id) => {
+    document.getElementById(id).textContent = address;
+  });
+  ["mobile-logo", "mobile-profile-logo", "mobile-footer-logo"].forEach((id) => {
+    document.getElementById(id).src = logoUrl;
+  });
+  document.getElementById("mobile-qris").src = qrisUrl;
+  document.getElementById("mobile-map-link").href =
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${config.latitude},${config.longitude}`)}`;
+
+  const announcements = document.getElementById("mobile-announcements");
+  announcements.replaceChildren();
+  (config.runningTexts || []).forEach((text, index) => {
+    const item = document.createElement("article");
+    item.className = "mobile-announcement";
+    const number = document.createElement("span");
+    number.className = "mobile-announcement-number";
+    number.textContent = String(index + 1).padStart(2, "0");
+    const message = document.createElement("p");
+    message.textContent = text;
+    item.append(number, message);
+    announcements.append(item);
+  });
+  if (!announcements.childElementCount) {
+    const empty = document.createElement("p");
+    empty.className = "mobile-empty-state";
+    empty.textContent = "Belum ada pengumuman.";
+    announcements.append(empty);
+  }
+
+  const gallery = document.getElementById("mobile-gallery");
+  gallery.replaceChildren();
+  const photos = config.photos
+    ? (Array.isArray(config.photos) ? config.photos : Object.values(config.photos))
+    : [];
+  photos.forEach((photo) => {
+    const card = document.createElement("figure");
+    card.className = "mobile-gallery-item";
+    const image = document.createElement("img");
+    image.src = photo.url || "";
+    image.alt = photo.caption || "Dokumentasi kegiatan masjid";
+    image.loading = "lazy";
+    const caption = document.createElement("figcaption");
+    caption.textContent = photo.caption || "Kegiatan Masjid Baiturrahim";
+    card.append(image, caption);
+    gallery.append(card);
+  });
+  if (!gallery.childElementCount) {
+    const empty = document.createElement("p");
+    empty.className = "mobile-empty-state";
+    empty.textContent = "Dokumentasi kegiatan akan ditampilkan di sini.";
+    gallery.append(empty);
+  }
+
+  renderMobileFinance();
+}
+
+function renderMobileFinance() {
+  if (!config) return;
+  const summary = window.dataStore.getFinanceSummary(config);
+  const formatRupiah = (value) => new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0
+  }).format(value);
+
+  document.getElementById("mobile-balance").textContent = formatRupiah(summary.balance);
+  document.getElementById("mobile-income").textContent = formatRupiah(summary.week.income);
+  document.getElementById("mobile-expense").textContent = formatRupiah(summary.week.expense);
+
+  const transactionList = document.getElementById("mobile-transactions");
+  transactionList.replaceChildren();
+  const transactions = [...(config.infaqTransactions || [])]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+  transactions.forEach((transaction) => {
+    const item = document.createElement("article");
+    item.className = "mobile-transaction";
+    const description = document.createElement("div");
+    const detail = document.createElement("strong");
+    detail.textContent = transaction.description || "Transaksi kas masjid";
+    const date = document.createElement("span");
+    date.textContent = transaction.date
+      ? new Date(`${transaction.date}T00:00:00`).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+      : "";
+    description.append(detail, date);
+    const amount = document.createElement("strong");
+    amount.className = transaction.type === "income" ? "is-income" : "is-expense";
+    amount.textContent = `${transaction.type === "income" ? "+" : "-"} ${formatRupiah(transaction.amount || 0)}`;
+    item.append(description, amount);
+    transactionList.append(item);
+  });
+  if (!transactionList.childElementCount) {
+    const empty = document.createElement("p");
+    empty.className = "mobile-empty-state";
+    empty.textContent = "Belum ada catatan transaksi.";
+    transactionList.append(empty);
   }
 }
 
@@ -748,4 +858,3 @@ function renderFinancialOverlay() {
     `;
   }).join("");
 }
-
