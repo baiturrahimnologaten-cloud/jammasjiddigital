@@ -18,6 +18,11 @@ let lastStateTickTime = Date.now();
 // Media Carousel Variables
 let slideIndex = 0;
 let slideInterval = null;
+let mobileGalleryIndex = 0;
+let mobileGalleryInterval = null;
+let mobileGalleryObserver = null;
+let mobileGalleryScrollTimeout = null;
+let mobileGalleryInView = false;
 
 // Audio context helper for beep alert (Web Audio API)
 let audioPlayedForCurrentState = false;
@@ -331,6 +336,27 @@ document.addEventListener("DOMContentLoaded", () => {
   donationModal.addEventListener("click", (event) => {
     if (event.target === donationModal) donationModal.close();
   });
+
+  document.getElementById("btn-mobile-gallery-prev").addEventListener("click", () => {
+    showMobileGallerySlide(mobileGalleryIndex - 1);
+    startMobileGallerySlideshow();
+  });
+  document.getElementById("btn-mobile-gallery-next").addEventListener("click", () => {
+    showMobileGallerySlide(mobileGalleryIndex + 1);
+    startMobileGallerySlideshow();
+  });
+  document.getElementById("mobile-gallery").addEventListener("scroll", () => {
+    clearTimeout(mobileGalleryScrollTimeout);
+    mobileGalleryScrollTimeout = setTimeout(updateMobileGalleryIndex, 120);
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      clearInterval(mobileGalleryInterval);
+      mobileGalleryInterval = null;
+    } else {
+      startMobileGallerySlideshow();
+    }
+  });
 });
 
 /**
@@ -483,6 +509,7 @@ function renderMobilePortal() {
     card.append(image, caption);
     gallery.append(card);
   });
+  setupMobileGallery();
   if (!gallery.childElementCount) {
     const empty = document.createElement("p");
     empty.className = "mobile-empty-state";
@@ -491,6 +518,91 @@ function renderMobilePortal() {
   }
 
   renderMobileFinance();
+}
+
+function setupMobileGallery() {
+  clearInterval(mobileGalleryInterval);
+  mobileGalleryInterval = null;
+  if (mobileGalleryObserver) {
+    mobileGalleryObserver.disconnect();
+    mobileGalleryObserver = null;
+  }
+  mobileGalleryInView = false;
+
+  const gallery = document.getElementById("mobile-gallery");
+  const cards = gallery.querySelectorAll(".mobile-gallery-item");
+  const controls = document.getElementById("mobile-gallery-controls");
+  controls.hidden = cards.length < 2;
+  mobileGalleryIndex = 0;
+  document.getElementById("mobile-gallery-counter").textContent = `1 / ${cards.length || 1}`;
+
+  if (cards.length < 2) return;
+
+  showMobileGallerySlide(0, false);
+  if ("IntersectionObserver" in window) {
+    mobileGalleryObserver = new IntersectionObserver(([entry]) => {
+      mobileGalleryInView = entry.isIntersecting;
+      if (mobileGalleryInView && !document.hidden) {
+        startMobileGallerySlideshow();
+      } else {
+        clearInterval(mobileGalleryInterval);
+        mobileGalleryInterval = null;
+      }
+    }, { threshold: 0.25 });
+    mobileGalleryObserver.observe(gallery);
+  } else {
+    mobileGalleryInView = true;
+    startMobileGallerySlideshow();
+  }
+}
+
+function showMobileGallerySlide(index, smooth = true) {
+  const gallery = document.getElementById("mobile-gallery");
+  const cards = gallery.querySelectorAll(".mobile-gallery-item");
+  if (!cards.length) return;
+
+  mobileGalleryIndex = (index + cards.length) % cards.length;
+  const galleryBounds = gallery.getBoundingClientRect();
+  const cardBounds = cards[mobileGalleryIndex].getBoundingClientRect();
+  const targetLeft = gallery.scrollLeft + cardBounds.left - galleryBounds.left;
+  gallery.scrollTo({ left: targetLeft, behavior: smooth ? "smooth" : "auto" });
+  document.getElementById("mobile-gallery-counter").textContent =
+    `${mobileGalleryIndex + 1} / ${cards.length}`;
+}
+
+function updateMobileGalleryIndex() {
+  const gallery = document.getElementById("mobile-gallery");
+  const cards = gallery.querySelectorAll(".mobile-gallery-item");
+  if (!cards.length) return;
+
+  const galleryLeft = gallery.getBoundingClientRect().left;
+  let closestIndex = 0;
+  let closestDistance = Infinity;
+  cards.forEach((card, index) => {
+    const distance = Math.abs(card.getBoundingClientRect().left - galleryLeft);
+    if (distance < closestDistance) {
+      closestDistance = distance;
+      closestIndex = index;
+    }
+  });
+  mobileGalleryIndex = closestIndex;
+  document.getElementById("mobile-gallery-counter").textContent =
+    `${mobileGalleryIndex + 1} / ${cards.length}`;
+}
+
+function startMobileGallerySlideshow() {
+  clearInterval(mobileGalleryInterval);
+  const gallery = document.getElementById("mobile-gallery");
+  if (
+    document.hidden ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+    gallery.querySelectorAll(".mobile-gallery-item").length < 2 ||
+    (mobileGalleryObserver && !mobileGalleryInView)
+  ) return;
+
+  mobileGalleryInterval = setInterval(() => {
+    showMobileGallerySlide(mobileGalleryIndex + 1);
+  }, 5000);
 }
 
 function renderMobileFinance() {

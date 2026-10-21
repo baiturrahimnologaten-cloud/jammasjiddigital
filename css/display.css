@@ -1250,9 +1250,10 @@ main {
   }
 
   .mobile-gallery-hint {
-    margin: -7px 0 12px;
+    margin: 10px 0 0;
     color: var(--color-muted);
     font-size: 0.7rem;
+    text-align: center;
   }
 
   .mobile-section-nav::-webkit-scrollbar {
@@ -1276,10 +1277,10 @@ main {
   }
 
   #mobile-profil { order: 2; }
-  #mobile-pengumuman { order: 3; }
-  #mobile-dokumentasi { order: 4; }
-  #mobile-ketakmiran { order: 5; }
-  #mobile-keuangan { order: 6; }
+  #mobile-keuangan { order: 3; }
+  #mobile-pengumuman { order: 4; }
+  #mobile-dokumentasi { order: 5; }
+  #mobile-ketakmiran { order: 6; }
   #mobile-donasi { order: 7; }
 
   .mobile-section-heading {
@@ -1621,6 +1622,41 @@ main {
     display: none;
   }
 
+  .mobile-gallery-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 13px;
+  }
+
+  .mobile-gallery-controls[hidden] {
+    display: none;
+  }
+
+  .mobile-gallery-controls button {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    color: var(--accent-gold);
+    background: rgba(229, 192, 96, 0.08);
+    border: 1px solid rgba(229, 192, 96, 0.26);
+    border-radius: 50%;
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .mobile-gallery-controls span {
+    min-width: 42px;
+    color: var(--color-secondary);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }
+
   .mobile-gallery-item {
     flex: 0 0 82%;
     scroll-snap-align: start;
@@ -1698,6 +1734,11 @@ main {
     margin-left: -15px;
     padding-right: 15px;
     padding-left: 15px;
+  }
+
+  .mobile-gallery {
+    margin-right: -15px;
+    padding-right: 15px;
   }
 
   .mobile-hero {

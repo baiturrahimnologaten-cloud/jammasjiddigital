@@ -35,10 +35,10 @@
 
       <nav class="mobile-section-nav" aria-label="Navigasi informasi masjid">
         <a href="#mobile-profil">Profil</a>
+        <a href="#mobile-keuangan">Keuangan</a>
         <a href="#mobile-pengumuman">Pengumuman</a>
         <a href="#mobile-dokumentasi">Dokumentasi</a>
         <a href="#mobile-ketakmiran">Takmir</a>
-        <a href="#mobile-keuangan">Keuangan</a>
         <a href="#mobile-donasi">Donasi</a>
       </nav>
 
@@ -122,8 +122,13 @@
           <div><span class="mobile-kicker">CERITA KEGIATAN</span><h2>Dokumentasi</h2></div>
           <span class="mobile-section-mark" aria-hidden="true">▧</span>
         </div>
-        <p class="mobile-gallery-hint">Geser foto untuk melihat dokumentasi lainnya.</p>
         <div class="mobile-gallery" id="mobile-gallery"></div>
+        <div class="mobile-gallery-controls" id="mobile-gallery-controls" hidden>
+          <button type="button" id="btn-mobile-gallery-prev" aria-label="Foto dokumentasi sebelumnya">‹</button>
+          <span id="mobile-gallery-counter">1 / 1</span>
+          <button type="button" id="btn-mobile-gallery-next" aria-label="Foto dokumentasi berikutnya">›</button>
+        </div>
+        <p class="mobile-gallery-hint">Foto berganti otomatis. Geser atau gunakan tombol untuk melihat lainnya.</p>
       </section>
 
       <footer class="mobile-footer">
